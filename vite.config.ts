@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import { readFileSync } from 'node:fs';
 
 /**
  * Content-Security-Policy: the page may load only its own files.
@@ -30,4 +31,6 @@ export default defineConfig({
   // Relative asset paths, so the site also works from a sub-path (such as a GitHub Pages project page).
   base: './',
   plugins: [react(), csp()],
+  // The version tag in the corner reads this, so package.json stays the only place to change it.
+  define: { __APP_VERSION__: JSON.stringify(JSON.parse(readFileSync('package.json', 'utf8')).version) },
 });

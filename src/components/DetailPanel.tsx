@@ -23,6 +23,12 @@ export const DetailPanel = memo(forwardRef<HTMLElement, Props>(function DetailPa
       <h2 id="p-title">{title}</h2>
       <p className="sub" id="p-sub" hidden={!sub}>{sub}</p>
       <p className="text" id="p-text">{d?.text || ''}</p>
+      {d?.note && (
+        <div className="note" role="note">
+          <span className="note-h">Required</span>
+          {d.note}
+        </div>
+      )}
       <div id="p-extra" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {d?.groups?.map((g, i) => (
           <div className="grp" key={i}>

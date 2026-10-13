@@ -49,7 +49,7 @@ const baseEdges: Edge[] = [
 
 export const edges: Edge[] = baseEdges
   .concat(row('a1', 'a1t', ['a1p1', 'a1p2', 'a1p3', 'a1p4', 'a1p5', 'a1p6'], 'a'))
-  .concat(row('a2', 'a2t', ['a2p1', 'a2p2', 'a2p3', 'a2p4', 'a2p5', 'a2p6'], 'a'))
+  .concat(row('a2', 'a2t', ['a2p1', 'a2p2', 'a2p3', 'a2p4', 'a2p5', 'a2p6', 'a2p7', 'a2p8'], 'a'))
   .concat(row('b1', 's-time', ['p1', 'p2', 'p3', 'p4', 'p5'], 'b'));
 
 export const rowHeads = Object.keys(rowMembers);

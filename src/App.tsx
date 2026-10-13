@@ -157,6 +157,8 @@ export default function App() {
         onToggleRows={toggleAllRows}
       />
 
+      <div className="version" aria-label={'Version ' + __APP_VERSION__}>v{__APP_VERSION__}</div>
+
       <DetailPanel
         ref={panelRef}
         node={panelId ? byId[panelId] : null}

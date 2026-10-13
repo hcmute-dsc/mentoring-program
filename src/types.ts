@@ -17,6 +17,8 @@ export interface Detail {
   text?: string;
   groups?: DetailGroup[];
   pre?: string;
+  /** A required action, shown in a highlighted box under the text. */
+  note?: string;
 }
 
 /** One block on the map. */

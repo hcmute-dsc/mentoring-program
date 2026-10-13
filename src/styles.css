@@ -154,6 +154,19 @@ body {
 .controls button:last-child { border-right: 0; }
 .controls button:hover { background: var(--code-bg); }
 .controls button:focus-visible { outline: 2px solid var(--track-a); outline-offset: -2px; }
+/* Version tag in the bottom-right corner. The detail panel slides over it. */
+.version {
+  position: absolute;
+  right: 14px; bottom: 14px;
+  padding: 4px 10px;
+  font: 500 0.82rem var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  pointer-events: none;
+}
 /* Read by screen readers, not shown. */
 .sr-only {
   position: absolute;
@@ -237,6 +250,24 @@ body {
   overflow-wrap: anywhere;
 }
 
+.panel .note {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--mentor);
+  border-radius: 8px;
+  background: var(--mentor-soft);
+}
+.panel .note-h {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mentor);
+}
+
 /* Phones: the panel becomes a bottom sheet. */
 @media (max-width: 640px) {
   .panel {
@@ -247,6 +278,10 @@ body {
     transform: translateY(calc(100% + 24px));
   }
   .topbar p.long { display: none; }
+}
+/* Too narrow for the tag next to the zoom controls: move it above them. */
+@media (max-width: 440px) {
+  .version { bottom: 62px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .panel, .panel.open { transition: none; }
