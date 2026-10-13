@@ -25,3 +25,11 @@ npm run preview  # serve the production build
 - `src/useViewport.ts` – pan, zoom, and "fit" logic.
 - `src/components/` – the map canvas, detail panel, and zoom controls.
 - `src/styles.css` – all styles, with light and dark themes.
+
+## Deploy
+
+Every push to `main` builds the site and deploys it to GitHub Pages (`.github/workflows/deploy.yml`).
+The site is at https://hcmute-dsc.github.io/mentoring-program/.
+
+One-time setup: in the repo, open **Settings → Pages**, and set **Source** to **GitHub Actions**.
+You can also run the deploy by hand from the **Actions** tab ("Deploy to GitHub Pages" → "Run workflow").
