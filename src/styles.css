@@ -1,0 +1,246 @@
+/* Base reset. The body colors and font are set further down. */
+:root { color-scheme: light; box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body { margin: 0; padding: 0; }
+[hidden]:not([hidden=until-found i]) { display: none !important; }
+#root { height: 100%; }
+
+/* Layout: one full-screen canvas. The map pans and zooms. Details open in a side panel (bottom sheet on phones) only on click. */
+:root {
+  --bg: #F5F7FA;
+  --surface: #FFFFFF;
+  --fg: #152031;
+  --muted: #5A6679;
+  --line: #DCE2EB;
+  --line-strong: #C3CCD9;
+  --dot: #D3DAE4;
+  --track-a: #2459C9;
+  --track-a-soft: #E6EDFB;
+  --track-b: #0E7F63;
+  --track-b-soft: #E2F3EE;
+  --mentor: #7A3FD1;      /* mentor role */
+  --mentor-soft: #F0E9FC;
+  --code-bg: #EEF2F7;
+  --shadow: 0 10px 30px rgba(21, 32, 49, 0.12);
+  --brand: #0B1B3F;       /* club logo navy, same in both themes */
+  --brand-fg: #FFFFFF;
+  --brand-line: #C2573A;  /* club logo orange */
+  --font-display: "Bricolage Grotesque Variable", "IBM Plex Sans", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0E131A; --surface: #151C26; --fg: #E6EBF2; --muted: #9AA6B8; --line: #263142; --line-strong: #3A485E; --dot: #222C3A;
+    --track-a: #79A2FF; --track-a-soft: #1A2A4A; --track-b: #4CC9A4; --track-b-soft: #12322A; --mentor: #B99BFF; --mentor-soft: #2A2045; --code-bg: #1B2430;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  overflow: hidden;
+}
+.app { position: relative; height: 100%; overflow: hidden; }
+
+/* Canvas */
+#stage {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--dot) 1.1px, transparent 1.6px);
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#stage.dragging { cursor: grabbing; }
+#svg { display: block; width: 100%; height: 100%; }
+
+/* Nodes */
+.node { cursor: pointer; }
+.node rect { stroke-width: 1.5; transition: stroke-width .12s; }
+.node:hover rect { stroke-width: 2.5; }
+.node:focus { outline: none; }
+.node:focus-visible rect, .node.sel rect { stroke: var(--track-a); stroke-width: 3; }
+.node text { pointer-events: none; }
+.t { font-family: var(--font-display); font-size: 15px; font-weight: 600; fill: var(--fg); }
+.s { font-family: var(--font-body); font-size: 12px; fill: var(--muted); }
+.k-root rect { fill: var(--brand); stroke: var(--brand-line); stroke-width: 2; }
+.k-root .t { fill: var(--brand-fg); font-size: 17px; font-weight: 700; }
+.k-root .s { fill: var(--brand-fg); opacity: 0.75; font-size: 12.5px; }
+.k-sec rect { fill: var(--surface); stroke: var(--fg); }
+.k-sec .t { font-size: 16.5px; font-weight: 700; }
+.k-a rect { fill: var(--track-a-soft); stroke: var(--track-a); }
+.k-b rect { fill: var(--track-b-soft); stroke: var(--track-b); }
+.k-m rect { fill: var(--mentor-soft); stroke: var(--mentor); }
+.k-n rect { fill: var(--surface); stroke: var(--line-strong); }
+.k-chip rect { fill: var(--code-bg); stroke: var(--line-strong); }
+.k-chip .t { font-family: var(--font-mono); font-size: 12.5px; font-weight: 500; }
+.k-a .t.code { fill: var(--track-a); }
+.k-b .t.code { fill: var(--track-b); }
+
+/* Edges */
+.edge { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+.edge.a { stroke: var(--track-a); }
+.edge.b { stroke: var(--track-b); }
+.edge.dash { stroke-dasharray: 5 4; }
+.mk { fill: var(--muted); }
+.mk.a { fill: var(--track-a); }
+.mk.b { fill: var(--track-b); }
+.elabel rect { fill: var(--bg); }
+.elabel text { font-family: var(--font-mono); font-size: 11.5px; fill: var(--muted); }
+.frame { fill-opacity: 0.5; stroke-width: 1.5; pointer-events: none; }
+.frame.a { fill: var(--track-a-soft); stroke: var(--track-a); }
+.frame.b { fill: var(--track-b-soft); stroke: var(--track-b); }
+.hid { display: none; }
+
+/* Timeline toggles */
+.toggle { cursor: pointer; }
+.toggle circle { fill: var(--surface); stroke: var(--fg); stroke-width: 1.5; transition: fill .12s; }
+.toggle:hover circle { fill: var(--code-bg); }
+.toggle:focus { outline: none; }
+.toggle:focus-visible circle { stroke: var(--track-a); stroke-width: 3; }
+.toggle text { font-family: var(--font-mono); font-size: 17px; font-weight: 500; fill: var(--fg); pointer-events: none; }
+.controls button.rows { font: 500 0.82rem var(--font-body); }
+
+/* Overlays */
+.topbar {
+  position: absolute;
+  top: 14px; left: 14px;
+  max-width: calc(100% - 28px);
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  pointer-events: none;
+}
+.topbar h1 { margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; line-height: 1.25; }
+.topbar p { margin: 0; font-size: 0.8rem; color: var(--muted); }
+.controls {
+  position: absolute;
+  left: 14px; bottom: 14px;
+  display: flex; align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.controls button {
+  appearance: none;
+  font: 500 0.95rem var(--font-mono);
+  color: var(--fg);
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--line);
+  min-width: 40px; height: 38px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+.controls button:last-child { border-right: 0; }
+.controls button:hover { background: var(--code-bg); }
+.controls button:focus-visible { outline: 2px solid var(--track-a); outline-offset: -2px; }
+/* Read by screen readers, not shown. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.controls .pct { font: 0.8rem var(--font-mono); color: var(--muted); min-width: 54px; text-align: center; border-right: 1px solid var(--line); font-variant-numeric: tabular-nums; line-height: 38px; }
+
+/* Detail panel */
+.panel {
+  position: absolute;
+  top: 12px; right: 12px; bottom: 12px;
+  width: min(380px, calc(100% - 24px));
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow-y: auto;
+  padding: 18px 22px 24px;
+  display: flex; flex-direction: column; gap: 14px;
+  transform: translateX(calc(100% + 24px));
+  visibility: hidden;
+  transition: transform .25s ease, visibility 0s linear .25s;
+  /* 1 when the panel is a bottom sheet. App.tsx reads it, so the breakpoint is only set here. */
+  --sheet: 0;
+}
+.panel.open { transform: none; visibility: visible; transition: transform .25s ease; }
+/* Focus moves to the panel when it opens; the panel sliding in already shows where focus is. */
+.panel:focus { outline: none; }
+.panel-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--code-bg);
+  color: var(--muted);
+}
+.tag.a { background: var(--track-a-soft); color: var(--track-a); }
+.tag.b { background: var(--track-b-soft); color: var(--track-b); }
+.tag.m { background: var(--mentor-soft); color: var(--mentor); }
+.close {
+  appearance: none;
+  font: 500 0.85rem var(--font-body);
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.close:hover { color: var(--fg); background: var(--code-bg); }
+.close:focus-visible { outline: 2px solid var(--track-a); outline-offset: 2px; }
+.panel h2 { margin: 0; font-family: var(--font-display); font-size: 1.45rem; line-height: 1.2; text-wrap: balance; }
+.panel .sub { margin: -8px 0 0; color: var(--muted); font-size: 0.92rem; }
+.panel .text { margin: 0; }
+.panel .grp { display: flex; flex-direction: column; gap: 6px; }
+.panel .grp h3 {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.panel ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 4px; }
+.panel pre {
+  margin: 0;
+  background: var(--code-bg);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font: 0.82rem/1.7 var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Phones: the panel becomes a bottom sheet. */
+@media (max-width: 640px) {
+  .panel {
+    --sheet: 1;
+    top: auto; left: 12px; right: 12px;
+    width: auto;
+    max-height: 58%;
+    transform: translateY(calc(100% + 24px));
+  }
+  .topbar p.long { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel, .panel.open { transition: none; }
+}
