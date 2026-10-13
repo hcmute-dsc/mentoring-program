@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 /**
  * Content-Security-Policy: the page may load only its own files.
- * data: images are allowed for the empty favicon and for small images that Vite inlines.
+ * data: images are allowed for small images that Vite inlines.
  * Added to the build only, because the dev server needs inline scripts and styles.
  */
 const CSP = [
