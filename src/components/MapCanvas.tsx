@@ -31,34 +31,17 @@ const isActivateKey = (e: KeyboardEvent) => e.key === 'Enter' || e.key === ' ';
 const TOGGLE_R = 14;
 const isRowHead = new Set(rowHeads);
 
-/** Wheel events further apart than this (ms) start a new gesture. */
-const GESTURE_GAP = 200;
-/** Zoom speed per pixel of wheel movement: a trackpad pinch sends small steps, a mouse wheel large ones. */
+/**
+ * Zoom speed per pixel of wheel movement. A pinch (Ctrl + wheel) sends small steps, so it needs a higher speed.
+ * A two-finger trackpad swipe also sends small steps, but many of them, so the plain wheel speed suits it too.
+ */
 const PINCH_SPEED = 0.01;
 const WHEEL_SPEED = 0.0015;
 /** Largest zoom change from one wheel event (as a log factor): about 18%, like one plain mouse-wheel step. */
 const MAX_WHEEL_ZOOM = 0.2;
-/** One notch of a classic mouse wheel, in wheelDelta units. */
-const WHEEL_NOTCH = 120;
 
 /** Safari's pinch event (GestureEvent). TypeScript has no type for it. */
 type SafariGesture = UIEvent & { scale: number; clientX: number; clientY: number };
-
-/**
- * Guess if a wheel event comes from a trackpad swipe rather than a mouse wheel.
- * `mode` is read by the caller before deltaY: Firefox then reports a mouse wheel in lines.
- */
-function looksLikeTrackpad(e: WheelEvent, mode: number) {
-  if (mode !== 0) return false; // Lines or pages: a mouse wheel.
-  if (e.deltaX !== 0) return true; // Sideways movement: a trackpad, or Shift + wheel.
-  const wheelDeltaY = (e as WheelEvent & { wheelDeltaY?: number }).wheelDeltaY;
-  // No wheelDeltaY (Firefox): a mouse wheel reports lines, so pixels mean a trackpad.
-  if (wheelDeltaY === undefined) return true;
-  // macOS Chrome and Safari: for a trackpad, wheelDeltaY is exactly -3 × deltaY.
-  if (wheelDeltaY === -3 * e.deltaY) return true;
-  // Other platforms: a mouse wheel moves in whole notches of 120. A trackpad sends any value.
-  return wheelDeltaY % WHEEL_NOTCH !== 0;
-}
 
 /** :focus-visible, or true in older browsers (such as Safari before 15.4) that throw on it. */
 function isFocusVisible(el: Element) {
@@ -74,32 +57,21 @@ export function MapCanvas({ svgRef, worldRef, vp, rowOpen, selectedId, onOpenNod
 
   /*
    * Wheel and trackpad. Attached by hand because React wheel listeners are passive and cannot preventDefault.
-   * A mouse wheel zooms. A trackpad pinch zooms: Ctrl + wheel in most browsers, gesture events in Safari.
-   * A two-finger trackpad swipe moves the map.
+   * Every wheel event zooms: a mouse wheel, a two-finger trackpad swipe (up and down only),
+   * and a trackpad pinch (Ctrl + wheel in most browsers, gesture events in Safari). Dragging moves the map.
    */
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
-    // The first event of a gesture decides: move or zoom. The rest of the gesture keeps that choice.
-    let gesture: { pan: boolean; at: number } | null = null;
     // Scale of the running Safari pinch at the last event, or null when no Safari pinch is running.
     let safariScale: number | null = null;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       // A Safari pinch is handled by the gesture events below. Do not zoom twice.
       if (e.ctrlKey && safariScale !== null) return;
-      const mode = e.deltaMode; // Read before deltaY, see looksLikeTrackpad.
-      const unit = mode === 1 ? 16 : mode === 2 ? 400 : 1;
-      const dx = e.deltaX * unit, dy = e.deltaY * unit;
-      if (!dx && !dy) return;
-      if (!gesture || e.timeStamp - gesture.at > GESTURE_GAP) gesture = { pan: looksLikeTrackpad(e, mode), at: e.timeStamp };
-      else gesture.at = e.timeStamp;
-      if (gesture.pan && !e.ctrlKey) {
-        stopAnim();
-        const v = viewRef.current;
-        moveTo({ k: v.k, x: v.x - dx, y: v.y - dy });
-        return;
-      }
+      // Read deltaMode before deltaY. Firefox then reports a mouse wheel in lines (deltaMode 1), not pixels.
+      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+      const dy = e.deltaY * unit;
       if (!dy) return;
       const r = svg.getBoundingClientRect();
       // Ctrl + mouse wheel also arrives here, with large steps. The limit keeps it to one normal wheel step.
@@ -127,7 +99,7 @@ export function MapCanvas({ svgRef, worldRef, vp, rowOpen, selectedId, onOpenNod
       svg.removeEventListener('wheel', onWheel);
       gestureTypes.forEach((t) => svg.removeEventListener(t, onGesture));
     };
-  }, [svgRef, viewRef, moveTo, stopAnim, zoomAt]);
+  }, [svgRef, zoomAt]);
 
   /* Drag, click and pinch */
   const localPoint = (e: PointerEvent): Point => {

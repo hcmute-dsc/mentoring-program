@@ -146,21 +146,26 @@ export function useViewport(
   }, [svgRef, zoomAt]);
 
   /**
-   * Fit all visible blocks on screen, leaving room for the top bar and controls.
+   * Fit all visible blocks inside `area`, in screen pixels.
+   * Without `area`, use the whole screen, leaving room for the top bar and controls.
    * `auto` is true for the fit on page load and resize, which the user did not ask for.
    */
-  const fit = useCallback((animated: boolean, auto = false) => {
+  const fit = useCallback((animated: boolean, area?: Box, auto = false) => {
     const svg = svgRef.current;
     const world = worldRef.current;
     if (!svg || !world) return;
-    const r = svg.getBoundingClientRect();
     const bb = world.getBBox();
     if (!bb.width || !bb.height) return;
-    const top = topSpace(topbarRef.current), side = EDGE, bottom = CONTROLS_SPACE;
-    const k = clamp(Math.min((r.width - side * 2) / bb.width, (r.height - top - bottom) / bb.height));
+    let a = area;
+    if (!a) {
+      const r = svg.getBoundingClientRect();
+      const top = topSpace(topbarRef.current);
+      a = { x: EDGE, y: top, w: r.width - EDGE * 2, h: r.height - top - CONTROLS_SPACE };
+    }
+    const k = clamp(Math.min(a.w / bb.width, a.h / bb.height));
     byUser.current = !auto;
-    const x = (r.width - bb.width * k) / 2 - bb.x * k;
-    const y = top + (r.height - top - bottom - bb.height * k) / 2 - bb.y * k;
+    const x = a.x + (a.w - bb.width * k) / 2 - bb.x * k;
+    const y = a.y + (a.h - bb.height * k) / 2 - bb.y * k;
     if (animated) animateTo(k, x, y);
     else { stopAnim(); setView({ k, x, y }); }
   }, [svgRef, worldRef, topbarRef, animateTo, setView, stopAnim]);
@@ -169,7 +174,7 @@ export function useViewport(
   const markTouched = useCallback(() => { touched.current = true; }, []);
 
   /** The fit on page load, font load and resize. It does nothing once the user has used the map. */
-  const autoFit = useCallback(() => { if (!touched.current) fit(false, true); }, [fit]);
+  const autoFit = useCallback(() => { if (!touched.current) fit(false, undefined, true); }, [fit]);
 
   return { view, viewRef, byUser, stopAnim, animateTo, moveTo, zoomAt, reveal, zoomCenter, fit, autoFit, markTouched };
 }

@@ -14,7 +14,7 @@ npm run preview  # serve the production build
 ## How to use
 
 - Click a block to see its details in the side panel (a bottom sheet on phones).
-- Drag to move the map. Scroll or pinch to zoom. On a trackpad, swipe with two fingers to move the map.
+- Drag to move the map. Scroll or pinch to zoom. On a trackpad, swipe up or down with two fingers to zoom.
 - Click `+` / `−` on a timeline block to show or hide its phases. "Show timelines" opens all of them.
 - Keys: `+` / `-` zoom, `0` fits the map, `Esc` closes the panel.
 

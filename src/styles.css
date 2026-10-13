@@ -68,7 +68,9 @@ body {
 .node rect { stroke-width: 1.5; transition: stroke-width .12s; }
 .node:hover rect { stroke-width: 2.5; }
 .node:focus { outline: none; }
-.node:focus-visible rect, .node.sel rect { stroke: var(--track-a); stroke-width: 3; }
+/* Separate rules: a browser without :focus-visible drops a whole rule list that contains it, and would lose .sel too. */
+.node.sel rect { stroke: var(--track-a); stroke-width: 3; }
+.node:focus-visible rect { stroke: var(--track-a); stroke-width: 3; }
 .node text { pointer-events: none; }
 .t { font-family: var(--font-display); font-size: 15px; font-weight: 600; fill: var(--fg); }
 .s { font-family: var(--font-body); font-size: 12px; fill: var(--muted); }
@@ -107,6 +109,11 @@ body {
 .toggle:hover circle { fill: var(--code-bg); }
 .toggle:focus { outline: none; }
 .toggle:focus-visible circle { stroke: var(--track-a); stroke-width: 3; }
+/* Without :focus-visible (such as Safari before 15.4), show the ring on every focus, so keyboard users still see it. */
+@supports not selector(:focus-visible) {
+  .node:focus rect { stroke: var(--track-a); stroke-width: 3; }
+  .toggle:focus circle { stroke: var(--track-a); stroke-width: 3; }
+}
 .toggle text { font-family: var(--font-mono); font-size: 17px; font-weight: 500; fill: var(--fg); pointer-events: none; }
 .controls button.rows { font: 500 0.82rem var(--font-body); }
 

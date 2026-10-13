@@ -50,11 +50,11 @@ export default function App() {
   const toggleRow = useCallback((head: string) => setRows([head], !rowOpen[head]), [setRows, rowOpen]);
   const toggleAllRows = () => setRows(rowHeads, !anyRowOpen);
 
-  /** Move the map so the box `b` (map units) is not under the top bar, the zoom controls or, if `panelOpen`, the panel. */
-  const showBox = useCallback((b: Box, panelOpen: boolean) => {
+  /** The screen area (pixels) not under the top bar, the zoom controls or, if `panelOpen`, the panel. */
+  const freeArea = useCallback((panelOpen: boolean): Box | undefined => {
     const svg = svgRef.current;
     const panel = panelRef.current;
-    if (!svg) return;
+    if (!svg) return undefined;
     const r = svg.getBoundingClientRect();
     // Keep the same space for the zoom controls as fit does. The area below leaves EDGE more, so add it back.
     let right = r.width, bottom = r.height - CONTROLS_SPACE + EDGE;
@@ -67,10 +67,19 @@ export default function App() {
     let top = topSpace(topbarRef.current);
     // On a short screen with the sheet open, little room is left. Covering the top bar is better than covering the block.
     if (bottom - top - EDGE < MIN_AREA_H) top = EDGE;
-    reveal(b, { x: EDGE, y: top, w: right - EDGE * 2, h: bottom - top - EDGE });
-  }, [reveal]);
+    return { x: EDGE, y: top, w: right - EDGE * 2, h: bottom - top - EDGE };
+  }, []);
+
+  /** Move the map so the box `b` (map units) is inside the free area. */
+  const showBox = useCallback((b: Box, panelOpen: boolean) => {
+    const area = freeArea(panelOpen);
+    if (area) reveal(b, area);
+  }, [freeArea, reveal]);
 
   const showFocused = useCallback((b: Box) => showBox(b, selectedId !== null), [showBox, selectedId]);
+
+  /** Fit the map into the free area, so an open panel does not cover part of it. */
+  const fitMap = useCallback(() => fit(true, freeArea(selectedId !== null)), [fit, freeArea, selectedId]);
 
   /* On open: move focus into the panel, and move the map so the panel does not cover the block. */
   useLayoutEffect(() => {
@@ -111,12 +120,12 @@ export default function App() {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === '+' || e.key === '=') zoomCenter(ZOOM_IN);
       else if (e.key === '-' || e.key === '_') zoomCenter(ZOOM_OUT);
-      else if (e.key === '0') fit(true);
+      else if (e.key === '0') fitMap();
       else if (e.key === 'Escape') closePanel();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [zoomCenter, fit, closePanel]);
+  }, [zoomCenter, fitMap, closePanel]);
 
   return (
     <div className="app">
@@ -144,7 +153,7 @@ export default function App() {
         anyRowOpen={anyRowOpen}
         onZoomOut={() => zoomCenter(ZOOM_OUT)}
         onZoomIn={() => zoomCenter(ZOOM_IN)}
-        onFit={() => fit(true)}
+        onFit={fitMap}
         onToggleRows={toggleAllRows}
       />
 
