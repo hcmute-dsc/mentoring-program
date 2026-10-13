@@ -1,4 +1,13 @@
-import { Fragment, memo, useEffect, useRef, type FocusEvent, type KeyboardEvent, type PointerEvent, type RefObject } from 'react';
+import {
+  Fragment,
+  memo,
+  useEffect,
+  useRef,
+  type FocusEvent,
+  type KeyboardEvent,
+  type PointerEvent,
+  type RefObject,
+} from 'react';
 import logo from '../assets/logo.jpg';
 import { byId, drawnEdges, nodes, rowFrames, rowHeads, rowOf } from '../graph';
 import type { MapNode } from '../types';
@@ -18,12 +27,25 @@ interface Props {
   onFocusBox: (b: Box) => void;
 }
 
-interface Point { x: number; y: number }
-interface DragState {
-  sx: number; sy: number; vx: number; vy: number; moved: boolean;
-  node: string | null; toggle: string | null;
+interface Point {
+  x: number;
+  y: number;
 }
-interface PinchState { d: number; k: number; wx: number; wy: number }
+interface DragState {
+  sx: number;
+  sy: number;
+  vx: number;
+  vy: number;
+  moved: boolean;
+  node: string | null;
+  toggle: string | null;
+}
+interface PinchState {
+  d: number;
+  k: number;
+  wx: number;
+  wy: number;
+}
 
 const isActivateKey = (e: KeyboardEvent) => e.key === 'Enter' || e.key === ' ';
 
@@ -45,10 +67,24 @@ type SafariGesture = UIEvent & { scale: number; clientX: number; clientY: number
 
 /** :focus-visible, or true in older browsers (such as Safari before 15.4) that throw on it. */
 function isFocusVisible(el: Element) {
-  try { return el.matches(':focus-visible'); } catch { return true; }
+  try {
+    return el.matches(':focus-visible');
+  } catch {
+    return true;
+  }
 }
 
-export function MapCanvas({ svgRef, worldRef, vp, rowOpen, selectedId, onOpenNode, onToggleRow, onBackgroundClick, onFocusBox }: Props) {
+export function MapCanvas({
+  svgRef,
+  worldRef,
+  vp,
+  rowOpen,
+  selectedId,
+  onOpenNode,
+  onToggleRow,
+  onBackgroundClick,
+  onFocusBox,
+}: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
   const pointers = useRef(new Map<number, Point>());
   const drag = useRef<DragState | null>(null);
@@ -83,8 +119,14 @@ export function MapCanvas({ svgRef, worldRef, vp, rowOpen, selectedId, onOpenNod
     const onGesture = (e: Event) => {
       e.preventDefault();
       const g = e as SafariGesture;
-      if (e.type === 'gestureend') { safariScale = null; return; }
-      if (e.type === 'gesturestart' || safariScale === null) { safariScale = g.scale; return; }
+      if (e.type === 'gestureend') {
+        safariScale = null;
+        return;
+      }
+      if (e.type === 'gesturestart' || safariScale === null) {
+        safariScale = g.scale;
+        return;
+      }
       const last = safariScale;
       safariScale = g.scale;
       // On iPhone and iPad, a two-finger pinch also sends pointer events, and those already zoom.
@@ -110,7 +152,8 @@ export function MapCanvas({ svgRef, worldRef, vp, rowOpen, selectedId, onOpenNod
   /** Start (or restart) a pinch from the first two pointers and the current view. */
   const startPinch = () => {
     const [a, b] = [...pointers.current.values()];
-    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    const mx = (a.x + b.x) / 2,
+      my = (a.y + b.y) / 2;
     const v = viewRef.current;
     pinch.current = { d: Math.hypot(a.x - b.x, a.y - b.y), k: v.k, wx: (mx - v.x) / v.k, wy: (my - v.y) / v.k };
   };
@@ -119,7 +162,11 @@ export function MapCanvas({ svgRef, worldRef, vp, rowOpen, selectedId, onOpenNod
     if (e.button !== 0 && e.pointerType === 'mouse') return;
     stopAnim();
     pointers.current.set(e.pointerId, localPoint(e));
-    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* ignore */ }
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* ignore */
+    }
     const count = pointers.current.size;
     if (count === 1) {
       const target = e.target as Element;
@@ -127,7 +174,11 @@ export function MapCanvas({ svgRef, worldRef, vp, rowOpen, selectedId, onOpenNod
       const nodeEl = !togEl ? target.closest('.node') : null;
       const v = viewRef.current;
       drag.current = {
-        sx: e.clientX, sy: e.clientY, vx: v.x, vy: v.y, moved: false,
+        sx: e.clientX,
+        sy: e.clientY,
+        vx: v.x,
+        vy: v.y,
+        moved: false,
         node: nodeEl?.getAttribute('data-id') ?? null,
         toggle: togEl?.getAttribute('data-toggle') ?? null,
       };
@@ -145,14 +196,19 @@ export function MapCanvas({ svgRef, worldRef, vp, rowOpen, selectedId, onOpenNod
     const dr = drag.current;
     if (pz && pointers.current.size >= 2) {
       // Both fingers started on the same point: there is no distance to compare with yet.
-      if (pz.d < 1) { startPinch(); return; }
+      if (pz.d < 1) {
+        startPinch();
+        return;
+      }
       const [a, b] = [...pointers.current.values()];
       const d = Math.hypot(a.x - b.x, a.y - b.y);
-      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-      const k = clamp(pz.k * d / pz.d);
+      const mx = (a.x + b.x) / 2,
+        my = (a.y + b.y) / 2;
+      const k = clamp((pz.k * d) / pz.d);
       moveTo({ k, x: mx - pz.wx * k, y: my - pz.wy * k });
     } else if (dr) {
-      const dx = e.clientX - dr.sx, dy = e.clientY - dr.sy;
+      const dx = e.clientX - dr.sx,
+        dy = e.clientY - dr.sy;
       if (!dr.moved && Math.hypot(dx, dy) > 4) {
         dr.moved = true;
         stageRef.current?.classList.add('dragging');
@@ -224,9 +280,39 @@ export function MapCanvas({ svgRef, worldRef, vp, rowOpen, selectedId, onOpenNod
         onFocus={onFocus}
       >
         <defs>
-          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" className="mk" /></marker>
-          <marker id="arr-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" className="mk a" /></marker>
-          <marker id="arr-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" className="mk b" /></marker>
+          <marker
+            id="arr"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L10,5 L0,10 z" className="mk" />
+          </marker>
+          <marker
+            id="arr-a"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L10,5 L0,10 z" className="mk a" />
+          </marker>
+          <marker
+            id="arr-b"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L10,5 L0,10 z" className="mk b" />
+          </marker>
         </defs>
         <g id="world" ref={worldRef} transform={`translate(${view.x} ${view.y}) scale(${view.k})`}>
           <MapLayers rowOpen={rowOpen} selectedId={selectedId} onOpenNode={onOpenNode} onToggleRow={onToggleRow} />
@@ -257,15 +343,19 @@ const MapLayers = memo(function MapLayers({ rowOpen, selectedId, onOpenNode, onT
         {rowFrames.map((f) => (
           <rect
             key={f.head}
-            x={f.x} y={f.y} width={f.w} height={f.h} rx={16}
+            x={f.x}
+            y={f.y}
+            width={f.w}
+            height={f.h}
+            rx={16}
             className={'frame ' + f.c + (rowOpen[f.head] ? '' : ' hid')}
           />
         ))}
       </g>
       <g>
         {drawnEdges.map((e, i) => {
-          const cls = 'edge' + (e.c ? ' ' + e.c : '') + (e.dash ? ' dash' : '') +
-            (e.row && !rowOpen[e.row] ? ' hid' : '');
+          const cls =
+            'edge' + (e.c ? ' ' + e.c : '') + (e.dash ? ' dash' : '') + (e.row && !rowOpen[e.row] ? ' hid' : '');
           return (
             <path
               key={i}
@@ -277,9 +367,11 @@ const MapLayers = memo(function MapLayers({ rowOpen, selectedId, onOpenNode, onT
         })}
       </g>
       <g>
-        {drawnEdges.filter((e) => e.label).map((e, i) => (
-          <EdgeLabel key={i} d={e.path} label={e.label!} />
-        ))}
+        {drawnEdges
+          .filter((e) => e.label)
+          .map((e, i) => (
+            <EdgeLabel key={i} d={e.path} label={e.label!} />
+          ))}
       </g>
       <g>
         {/* Each timeline toggle comes right after its block, so the Tab order is: block, toggle, phases. */}
@@ -289,7 +381,12 @@ const MapLayers = memo(function MapLayers({ rowOpen, selectedId, onOpenNode, onT
               n={n}
               hidden={hidden(n.id)}
               selected={n.id === selectedId}
-              onKeyDown={(e) => { if (isActivateKey(e)) { e.preventDefault(); if (!e.repeat) onOpenNode(n.id); } }}
+              onKeyDown={(e) => {
+                if (isActivateKey(e)) {
+                  e.preventDefault();
+                  if (!e.repeat) onOpenNode(n.id);
+                }
+              }}
             />
             {isRowHead.has(n.id) && <RowToggle n={n} open={!!rowOpen[n.id]} onToggle={onToggleRow} />}
           </Fragment>
@@ -307,7 +404,8 @@ interface RowToggleProps {
 
 /** The +/- button on the right edge of a timeline block. */
 function RowToggle({ n, open, onToggle }: RowToggleProps) {
-  const cx = n.x + n.w, cy = n.y + n.h / 2;
+  const cx = n.x + n.w,
+    cy = n.y + n.h / 2;
   return (
     <g
       className="toggle"
@@ -317,10 +415,17 @@ function RowToggle({ n, open, onToggle }: RowToggleProps) {
       aria-label={'Show or hide ' + n.t}
       aria-expanded={open}
       // A held key repeats. Act once, so the timeline does not flicker open and closed.
-      onKeyDown={(e) => { if (isActivateKey(e)) { e.preventDefault(); if (!e.repeat) onToggle(n.id); } }}
+      onKeyDown={(e) => {
+        if (isActivateKey(e)) {
+          e.preventDefault();
+          if (!e.repeat) onToggle(n.id);
+        }
+      }}
     >
       <circle cx={cx} cy={cy} r={TOGGLE_R} />
-      <text x={cx} y={cy + 5} textAnchor="middle">{open ? '−' : '+'}</text>
+      <text x={cx} y={cy + 5} textAnchor="middle">
+        {open ? '−' : '+'}
+      </text>
     </g>
   );
 }
@@ -334,27 +439,47 @@ interface NodeBlockProps {
 
 function NodeBlock({ n, hidden, selected, onKeyDown }: NodeBlockProps) {
   const rx = n.k === 'chip' ? Math.min(14, n.h / 2) : 10;
-  const cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+  const cx = n.x + n.w / 2,
+    cy = n.y + n.h / 2;
   const cls = 'node k-' + n.k + (selected ? ' sel' : '') + (hidden ? ' hid' : '');
 
   let content;
   if (n.img) {
     content = (
       <>
-        <image href={logo} x={n.x + 20} y={n.y + 16} width={n.w - 40} height={(n.w - 40) * 0.4} preserveAspectRatio="xMidYMid meet" />
-        <text x={cx} y={n.y + n.h - 34} textAnchor="middle" className="t">{n.t}</text>
-        <text x={cx} y={n.y + n.h - 15} textAnchor="middle" className="s">{n.s}</text>
+        <image
+          href={logo}
+          x={n.x + 20}
+          y={n.y + 16}
+          width={n.w - 40}
+          height={(n.w - 40) * 0.4}
+          preserveAspectRatio="xMidYMid meet"
+        />
+        <text x={cx} y={n.y + n.h - 34} textAnchor="middle" className="t">
+          {n.t}
+        </text>
+        <text x={cx} y={n.y + n.h - 15} textAnchor="middle" className="s">
+          {n.s}
+        </text>
       </>
     );
   } else if (n.s) {
     content = (
       <>
-        <text x={cx} y={cy - 3} textAnchor="middle" className={'t' + (n.code ? ' code' : '')}>{n.t}</text>
-        <text x={cx} y={cy + 15} textAnchor="middle" className="s">{n.s}</text>
+        <text x={cx} y={cy - 3} textAnchor="middle" className={'t' + (n.code ? ' code' : '')}>
+          {n.t}
+        </text>
+        <text x={cx} y={cy + 15} textAnchor="middle" className="s">
+          {n.s}
+        </text>
       </>
     );
   } else {
-    content = <text x={cx} y={cy + 5} textAnchor="middle" className="t">{n.t}</text>;
+    content = (
+      <text x={cx} y={cy + 5} textAnchor="middle" className="t">
+        {n.t}
+      </text>
+    );
   }
 
   return (

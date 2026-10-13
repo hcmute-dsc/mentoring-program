@@ -30,22 +30,28 @@ export default function App() {
 
   const anyRowOpen = rowHeads.some((h) => rowOpen[h]);
 
-  const openNode = useCallback((id: string) => {
-    if (!byId[id]?.d) return;
-    // Opening a block counts as using the map, so a resize no longer refits it and hides the block.
-    markTouched();
-    setSelectedId(id);
-    setPanelId(id);
-    setOpenSeq((s) => s + 1);
-  }, [markTouched]);
+  const openNode = useCallback(
+    (id: string) => {
+      if (!byId[id]?.d) return;
+      // Opening a block counts as using the map, so a resize no longer refits it and hides the block.
+      markTouched();
+      setSelectedId(id);
+      setPanelId(id);
+      setOpenSeq((s) => s + 1);
+    },
+    [markTouched],
+  );
 
   const closePanel = useCallback(() => setSelectedId(null), []);
 
-  const setRows = useCallback((heads: string[], open: boolean) => {
-    setRowOpen((prev) => ({ ...prev, ...Object.fromEntries(heads.map((h) => [h, open])) }));
-    // Close the panel if its block is being hidden.
-    if (!open && selectedId && heads.includes(rowOf[selectedId])) closePanel();
-  }, [selectedId, closePanel]);
+  const setRows = useCallback(
+    (heads: string[], open: boolean) => {
+      setRowOpen((prev) => ({ ...prev, ...Object.fromEntries(heads.map((h) => [h, open])) }));
+      // Close the panel if its block is being hidden.
+      if (!open && selectedId && heads.includes(rowOf[selectedId])) closePanel();
+    },
+    [selectedId, closePanel],
+  );
   // Stable between pan and zoom frames, so the memoized map layers do not re-render.
   const toggleRow = useCallback((head: string) => setRows([head], !rowOpen[head]), [setRows, rowOpen]);
   const toggleAllRows = () => setRows(rowHeads, !anyRowOpen);
@@ -57,7 +63,8 @@ export default function App() {
     if (!svg) return undefined;
     const r = svg.getBoundingClientRect();
     // Keep the same space for the zoom controls as fit does. The area below leaves EDGE more, so add it back.
-    let right = r.width, bottom = r.height - CONTROLS_SPACE + EDGE;
+    let right = r.width,
+      bottom = r.height - CONTROLS_SPACE + EDGE;
     if (panelOpen && panel) {
       // A side panel on wide screens, a bottom sheet on phones. offsetLeft and offsetTop ignore the slide-in transform.
       // The sheet covers the controls, so its top edge is the limit.
@@ -71,10 +78,13 @@ export default function App() {
   }, []);
 
   /** Move the map so the box `b` (map units) is inside the free area. */
-  const showBox = useCallback((b: Box, panelOpen: boolean) => {
-    const area = freeArea(panelOpen);
-    if (area) reveal(b, area);
-  }, [freeArea, reveal]);
+  const showBox = useCallback(
+    (b: Box, panelOpen: boolean) => {
+      const area = freeArea(panelOpen);
+      if (area) reveal(b, area);
+    },
+    [freeArea, reveal],
+  );
 
   const showFocused = useCallback((b: Box) => showBox(b, selectedId !== null), [showBox, selectedId]);
 
@@ -104,7 +114,9 @@ export default function App() {
     autoFit();
     window.addEventListener('resize', autoFit);
     let alive = true;
-    document.fonts?.ready.then(() => { if (alive) autoFit(); });
+    document.fonts?.ready.then(() => {
+      if (alive) autoFit();
+    });
     return () => {
       alive = false;
       window.removeEventListener('resize', autoFit);
@@ -157,7 +169,9 @@ export default function App() {
         onToggleRows={toggleAllRows}
       />
 
-      <div className="version" aria-label={'Version ' + __APP_VERSION__}>v{__APP_VERSION__}</div>
+      <div className="version" aria-label={'Version ' + __APP_VERSION__}>
+        v{__APP_VERSION__}
+      </div>
 
       <DetailPanel
         ref={panelRef}

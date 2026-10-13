@@ -28,11 +28,21 @@ export function Controls({ zoom, zoomByUser, anyRowOpen, onZoomIn, onZoomOut, on
 
   return (
     <div className="controls" role="group" aria-label="Zoom controls">
-      <button type="button" id="zout" aria-label="Zoom out" onClick={onZoomOut}>−</button>
-      <span className="pct" id="pct">{pct}%</span>
-      <span className="sr-only" role="status">{spoken && 'Zoom ' + spoken}</span>
-      <button type="button" id="zin" aria-label="Zoom in" onClick={onZoomIn}>+</button>
-      <button type="button" id="zfit" className="rows" onClick={onFit}>Fit</button>
+      <button type="button" id="zout" aria-label="Zoom out" onClick={onZoomOut}>
+        −
+      </button>
+      <span className="pct" id="pct">
+        {pct}%
+      </span>
+      <span className="sr-only" role="status">
+        {spoken && 'Zoom ' + spoken}
+      </span>
+      <button type="button" id="zin" aria-label="Zoom in" onClick={onZoomIn}>
+        +
+      </button>
+      <button type="button" id="zfit" className="rows" onClick={onFit}>
+        Fit
+      </button>
       <button type="button" id="zrows" className="rows" onClick={onToggleRows}>
         {anyRowOpen ? 'Hide timelines' : 'Show timelines'}
       </button>

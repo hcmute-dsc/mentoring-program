@@ -1,6 +1,11 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 
-interface Box { x: number; y: number; width: number; height: number }
+interface Box {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 /**
  * A text label placed at the middle of a path, on a small background box.
@@ -29,8 +34,12 @@ export function EdgeLabel({ d, label }: { d: string; label: string }) {
     measure();
     // Re-measure once the web fonts load, because the text width changes.
     let alive = true;
-    document.fonts?.ready.then(() => { if (alive) measure(); });
-    return () => { alive = false; };
+    document.fonts?.ready.then(() => {
+      if (alive) measure();
+    });
+    return () => {
+      alive = false;
+    };
   }, [pt, label]);
 
   return (
@@ -40,7 +49,9 @@ export function EdgeLabel({ d, label }: { d: string; label: string }) {
       {pt && (
         <>
           {box && <rect rx={4} x={box.x} y={box.y} width={box.width} height={box.height} />}
-          <text ref={textRef} x={pt.x} y={pt.y + 4} textAnchor="middle">{label}</text>
+          <text ref={textRef} x={pt.x} y={pt.y + 4} textAnchor="middle">
+            {label}
+          </text>
         </>
       )}
     </g>

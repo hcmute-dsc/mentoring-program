@@ -31,18 +31,50 @@ const bottomY = (n: MapNode) => n.y + n.h;
 const ARROW_GAP = 2;
 
 const baseEdges: Edge[] = [
-  { a: 'root', b: 's-groups' }, { a: 'root', b: 's-week' },
+  { a: 'root', b: 's-groups' },
+  { a: 'root', b: 's-week' },
 
-  { a: 's-groups', b: 'trackA', c: 'a' }, { a: 's-groups', b: 'trackB', c: 'b' },
-  { a: 'trackA', b: 'a1', c: 'a' }, { a: 'trackA', b: 'a2', c: 'a' }, { a: 'trackB', b: 'b1', c: 'b', line: true },
+  { a: 's-groups', b: 'trackA', c: 'a' },
+  { a: 's-groups', b: 'trackB', c: 'b' },
+  { a: 'trackA', b: 'a1', c: 'a' },
+  { a: 'trackA', b: 'a2', c: 'a' },
+  { a: 'trackB', b: 'b1', c: 'b', line: true },
   // Track A -> "Move up" -> Track B, and Track B -> "Join A" -> Track A.
-  { p: [[midX(moveup), bottomY(trackA)], [midX(moveup), moveup.y]], c: 'b', noArrow: true },
-  { p: [[midX(moveup), bottomY(moveup)], [midX(moveup), trackB.y - ARROW_GAP]], c: 'b' },
-  { p: [[midX(joinA), trackB.y], [midX(joinA), bottomY(joinA)]], c: 'a', noArrow: true },
-  { p: [[midX(joinA), joinA.y], [midX(joinA), bottomY(trackA) + ARROW_GAP]], c: 'a' },
+  {
+    p: [
+      [midX(moveup), bottomY(trackA)],
+      [midX(moveup), moveup.y],
+    ],
+    c: 'b',
+    noArrow: true,
+  },
+  {
+    p: [
+      [midX(moveup), bottomY(moveup)],
+      [midX(moveup), trackB.y - ARROW_GAP],
+    ],
+    c: 'b',
+  },
+  {
+    p: [
+      [midX(joinA), trackB.y],
+      [midX(joinA), bottomY(joinA)],
+    ],
+    c: 'a',
+    noArrow: true,
+  },
+  {
+    p: [
+      [midX(joinA), joinA.y],
+      [midX(joinA), bottomY(trackA) + ARROW_GAP],
+    ],
+    c: 'a',
+  },
 
   { a: 's-week', b: 'w1' },
-  { a: 'w1', b: 'w2', line: true }, { a: 'w2', b: 'w3', line: true }, { a: 'w3', b: 'w4', line: true },
+  { a: 'w1', b: 'w2', line: true },
+  { a: 'w2', b: 'w3', line: true },
+  { a: 'w3', b: 'w4', line: true },
   // Loop back from the last weekly step to Monday, 30 units above the row.
   { d: `M${midX(w4)} ${w4.y} V${w4.y - 30} H${midX(w1)} V${w1.y - ARROW_GAP}`, dash: true, label: 'next Monday' },
 ];
@@ -56,7 +88,11 @@ export const rowHeads = Object.keys(rowMembers);
 
 /** Which timeline head a node belongs to, if any. */
 export const rowOf: Record<string, string> = {};
-rowHeads.forEach((head) => rowMembers[head].forEach((id) => { rowOf[id] = head; }));
+rowHeads.forEach((head) =>
+  rowMembers[head].forEach((id) => {
+    rowOf[id] = head;
+  }),
+);
 
 /** Space between a timeline's frame and the phases inside it. */
 const FRAME_PAD = 16;
@@ -69,7 +105,8 @@ export const rowFrames = rowHeads.map((head) => {
   return {
     head,
     c: rowTrack[head],
-    x, y,
+    x,
+    y,
     w: Math.max(...ns.map((n) => n.x + n.w)) + FRAME_PAD - x,
     h: Math.max(...ns.map((n) => n.y + n.h)) + FRAME_PAD - y,
   };
@@ -90,8 +127,24 @@ export function edgePath(e: Edge): string {
   const B = anchor(byId[e.b!], e.bs || 'l');
   if (e.line) return 'M' + A[0] + ' ' + A[1] + ' L' + B[0] + ' ' + B[1];
   const dist = Math.max(40, Math.abs(B[0] - A[0]) * 0.5);
-  return 'M' + A[0] + ' ' + A[1] + ' C' + (A[0] + A[2] * dist) + ' ' + (A[1] + A[3] * dist) + ', ' +
-    (B[0] + B[2] * dist) + ' ' + (B[1] + B[3] * dist) + ', ' + B[0] + ' ' + B[1];
+  return (
+    'M' +
+    A[0] +
+    ' ' +
+    A[1] +
+    ' C' +
+    (A[0] + A[2] * dist) +
+    ' ' +
+    (A[1] + A[3] * dist) +
+    ', ' +
+    (B[0] + B[2] * dist) +
+    ' ' +
+    (B[1] + B[3] * dist) +
+    ', ' +
+    B[0] +
+    ' ' +
+    B[1]
+  );
 }
 
 /** Edges with their path data, computed once because the layout never changes. */
