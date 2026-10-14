@@ -17,6 +17,7 @@ npm run preview  # serve the production build
 - Drag to move the map. Scroll or pinch to zoom. On a trackpad, swipe up or down with two fingers to zoom.
 - Click `+` / `−` on a timeline block to show or hide its phases. "Show timelines" opens all of them.
 - Keys: `+` / `-` zoom, `0` fits the map, `Esc` closes the panel.
+- Click the version tag in the bottom-right corner to see what is new in this version.
 - Click the sun / moon button in the top-right corner to switch between the light and dark theme. The site follows the system theme until you pick one. Your choice is saved in the browser.
 
 ## Where things are
@@ -27,6 +28,12 @@ npm run preview  # serve the production build
 - `src/components/` – the map canvas, detail panel, and zoom controls.
 - `src/styles.css` – all styles, with light and dark themes.
 - `src/useTheme.ts` and `public/theme.js` – the light / dark theme switch.
+- `src/changelog.ts` – release notes for the "What's new" popup.
+
+## Release a new version
+
+1. Raise the version: `npm version <x.y.z> --no-git-tag-version`.
+2. Add an entry for it at the top of `src/changelog.ts`.
 
 ## Deploy
 

@@ -287,6 +287,23 @@ body {
 }
 
 /* Overlays */
+/* Bottom row: zoom controls on the left, version tag on the right.
+   wrap-reverse moves the tag to its own line above the controls when both do not fit. */
+.bottombar {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  /* wrap-reverse flips the cross axis, so flex-start puts the items on the bottom line. */
+  align-items: flex-start;
+  gap: 10px;
+  pointer-events: none;
+}
+.bottombar > * {
+  pointer-events: auto;
+}
 .topbar {
   position: absolute;
   top: 14px;
@@ -315,9 +332,8 @@ body {
   color: var(--muted);
 }
 .controls {
-  position: absolute;
-  left: 14px;
-  bottom: 14px;
+  /* Never shrink: on a very narrow screen, a shrunk bar would cut off its last button. */
+  flex: none;
   display: flex;
   align-items: center;
   background: var(--surface);
@@ -378,19 +394,106 @@ body {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-/* Version tag in the bottom-right corner. The detail panel slides over it. */
+/* Version tag in the bottom-right corner. A click opens "What's new". The detail panel slides over it. */
 .version {
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
+  margin-left: auto;
   padding: 4px 10px;
+  appearance: none;
   font: 500 0.82rem var(--font-mono);
   letter-spacing: 0.04em;
   color: var(--muted);
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 7px;
-  pointer-events: none;
+  cursor: pointer;
+}
+.version:hover {
+  color: var(--fg);
+  background: var(--code-bg);
+}
+.version:focus-visible {
+  outline: 2px solid var(--track-a);
+  outline-offset: 2px;
+}
+
+/* "What's new" popup. */
+.news {
+  width: min(440px, calc(100% - 32px));
+  max-height: min(600px, calc(100% - 32px));
+  padding: 0;
+  overflow-y: auto;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+/* A fixed color: older browsers do not pass the theme variables to ::backdrop. */
+.news::backdrop {
+  background: rgba(8, 12, 18, 0.5);
+}
+.news:focus {
+  outline: none;
+}
+/* Keep "v1.0.1" lowercase, like the version tag. */
+.news .tag {
+  text-transform: none;
+}
+.news-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 22px 22px;
+}
+.news h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  line-height: 1.2;
+}
+.news ul {
+  margin: 0;
+  padding-left: 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.news-none {
+  margin: 0;
+  color: var(--muted);
+}
+.news-earlier {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.news-earlier > summary {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+}
+.news-earlier > summary:focus-visible {
+  outline: 2px solid var(--track-a);
+  outline-offset: 2px;
+}
+.news-old {
+  margin-top: 10px;
+}
+.news-old > summary {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.news-old > summary:focus-visible {
+  outline: 2px solid var(--track-a);
+  outline-offset: 2px;
+}
+.news-old ul {
+  margin-top: 6px;
 }
 /* Read by screen readers, not shown. */
 .sr-only {
@@ -571,12 +674,6 @@ body {
   }
   .topbar p.long {
     display: none;
-  }
-}
-/* Too narrow for the tag next to the zoom controls: move it above them. */
-@media (max-width: 440px) {
-  .version {
-    bottom: 62px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
