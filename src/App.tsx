@@ -2,7 +2,10 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { Controls } from './components/Controls';
 import { DetailPanel } from './components/DetailPanel';
 import { MapCanvas } from './components/MapCanvas';
+import { ThemeToggle } from './components/ThemeToggle';
+import { WhatsNew } from './components/WhatsNew';
 import { byId, rowHeads, rowOf } from './graph';
+import { useTheme } from './useTheme';
 import { CONTROLS_SPACE, EDGE, topSpace, useViewport, ZOOM_IN, ZOOM_OUT, type Box } from './useViewport';
 
 /** True when the panel is a bottom sheet (phones). styles.css sets --sheet, so the breakpoint lives only there. */
@@ -19,6 +22,7 @@ export default function App() {
   const topbarRef = useRef<HTMLDivElement>(null);
   const vp = useViewport(svgRef, worldRef, topbarRef);
   const { view, reveal, zoomCenter, fit, autoFit, markTouched } = vp;
+  const { theme, toggleTheme } = useTheme();
 
   // Timelines start collapsed.
   const [rowOpen, setRowOpen] = useState<Record<string, boolean>>(() => allRows(false));
@@ -128,6 +132,8 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
       if (t && /input|textarea/i.test(t.tagName)) return;
+      // Keys inside a popup (such as "What's new") belong to it. Escape there closes only the popup.
+      if (t?.closest?.('dialog')) return;
       // Leave browser shortcuts (such as Ctrl/Cmd + '+' for page zoom) to the browser.
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === '+' || e.key === '=') zoomCenter(ZOOM_IN);
@@ -159,18 +165,20 @@ export default function App() {
         <p className="long">Scroll to zoom. Drag to move.</p>
       </div>
 
-      <Controls
-        zoom={view.k}
-        zoomByUser={vp.byUser}
-        anyRowOpen={anyRowOpen}
-        onZoomOut={() => zoomCenter(ZOOM_OUT)}
-        onZoomIn={() => zoomCenter(ZOOM_IN)}
-        onFit={fitMap}
-        onToggleRows={toggleAllRows}
-      />
+      <ThemeToggle theme={theme} onToggle={toggleTheme} />
 
-      <div className="version" aria-label={'Version ' + __APP_VERSION__}>
-        v{__APP_VERSION__}
+      {/* The zoom controls on the left, the version tag on the right. The tag moves above them if the row is too narrow. */}
+      <div className="bottombar">
+        <Controls
+          zoom={view.k}
+          zoomByUser={vp.byUser}
+          anyRowOpen={anyRowOpen}
+          onZoomOut={() => zoomCenter(ZOOM_OUT)}
+          onZoomIn={() => zoomCenter(ZOOM_IN)}
+          onFit={fitMap}
+          onToggleRows={toggleAllRows}
+        />
+        <WhatsNew />
       </div>
 
       <DetailPanel
