@@ -2,7 +2,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { Controls } from './components/Controls';
 import { DetailPanel } from './components/DetailPanel';
 import { MapCanvas } from './components/MapCanvas';
+import { ThemeToggle } from './components/ThemeToggle';
 import { byId, rowHeads, rowOf } from './graph';
+import { useTheme } from './useTheme';
 import { CONTROLS_SPACE, EDGE, topSpace, useViewport, ZOOM_IN, ZOOM_OUT, type Box } from './useViewport';
 
 /** True when the panel is a bottom sheet (phones). styles.css sets --sheet, so the breakpoint lives only there. */
@@ -19,6 +21,7 @@ export default function App() {
   const topbarRef = useRef<HTMLDivElement>(null);
   const vp = useViewport(svgRef, worldRef, topbarRef);
   const { view, reveal, zoomCenter, fit, autoFit, markTouched } = vp;
+  const { theme, toggleTheme } = useTheme();
 
   // Timelines start collapsed.
   const [rowOpen, setRowOpen] = useState<Record<string, boolean>>(() => allRows(false));
@@ -158,6 +161,8 @@ export default function App() {
         <p>Click a block to see details.</p>
         <p className="long">Scroll to zoom. Drag to move.</p>
       </div>
+
+      <ThemeToggle theme={theme} onToggle={toggleTheme} />
 
       <Controls
         zoom={view.k}

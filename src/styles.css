@@ -43,25 +43,24 @@ body {
   --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0e131a;
-    --surface: #151c26;
-    --fg: #e6ebf2;
-    --muted: #9aa6b8;
-    --line: #263142;
-    --line-strong: #3a485e;
-    --dot: #222c3a;
-    --track-a: #79a2ff;
-    --track-a-soft: #1a2a4a;
-    --track-b: #4cc9a4;
-    --track-b-soft: #12322a;
-    --mentor: #b99bff;
-    --mentor-soft: #2a2045;
-    --code-bg: #1b2430;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-    color-scheme: dark;
-  }
+/* public/theme.js and src/useTheme.ts set data-theme from the saved choice or the system theme. */
+:root[data-theme='dark'] {
+  --bg: #0e131a;
+  --surface: #151c26;
+  --fg: #e6ebf2;
+  --muted: #9aa6b8;
+  --line: #263142;
+  --line-strong: #3a485e;
+  --dot: #222c3a;
+  --track-a: #79a2ff;
+  --track-a-soft: #1a2a4a;
+  --track-b: #4cc9a4;
+  --track-b-soft: #12322a;
+  --mentor: #b99bff;
+  --mentor-soft: #2a2045;
+  --code-bg: #1b2430;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
 }
 
 * {
@@ -292,7 +291,8 @@ body {
   position: absolute;
   top: 14px;
   left: 14px;
-  max-width: calc(100% - 28px);
+  /* Leaves room for the theme button in the top-right corner. */
+  max-width: calc(100% - 80px);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -346,6 +346,37 @@ body {
 .controls button:focus-visible {
   outline: 2px solid var(--track-a);
   outline-offset: -2px;
+}
+/* Theme button in the top-right corner. The detail panel slides over it, like the version tag. */
+.theme-toggle {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  appearance: none;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.theme-toggle:hover {
+  background: var(--code-bg);
+}
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--track-a);
+  outline-offset: 2px;
+}
+.theme-toggle svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 /* Version tag in the bottom-right corner. The detail panel slides over it. */
 .version {
