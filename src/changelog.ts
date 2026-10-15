@@ -12,6 +12,14 @@ export interface Release {
  */
 export const releases: Release[] = [
   {
+    version: '2.0.0',
+    date: '2026-10-15',
+    items: [
+      'A new map: the Git & GitHub Study Jam timeline, from the kickoff to the closing ceremony.',
+      'Pick the map in the dropdown at the top-left.',
+    ],
+  },
+  {
     version: '1.0.1',
     date: '2026-10-14',
     items: [

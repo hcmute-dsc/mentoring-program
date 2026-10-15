@@ -211,7 +211,27 @@ export function useViewport(
     if (!touched.current) fit(false, undefined, true);
   }, [fit]);
 
-  return { view, viewRef, byUser, stopAnim, animateTo, moveTo, zoomAt, reveal, zoomCenter, fit, autoFit, markTouched };
+  /** Fit a newly shown map, as on page load. Resizes refit it again until the user moves it. */
+  const refit = useCallback(() => {
+    touched.current = false;
+    fit(false, undefined, true);
+  }, [fit]);
+
+  return {
+    view,
+    viewRef,
+    byUser,
+    stopAnim,
+    animateTo,
+    moveTo,
+    zoomAt,
+    reveal,
+    zoomCenter,
+    fit,
+    autoFit,
+    refit,
+    markTouched,
+  };
 }
 
 export type Viewport = ReturnType<typeof useViewport>;

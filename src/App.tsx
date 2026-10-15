@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Controls } from './components/Controls';
 import { DetailPanel } from './components/DetailPanel';
+import { DiagramPicker } from './components/DiagramPicker';
 import { MapCanvas } from './components/MapCanvas';
 import { ThemeToggle } from './components/ThemeToggle';
 import { WhatsNew } from './components/WhatsNew';
-import { byId, rowHeads, rowOf } from './graph';
+import { diagrams } from './diagrams';
+import { graphs } from './graph';
+import type { MapNode } from './types';
 import { useTheme } from './useTheme';
 import { CONTROLS_SPACE, EDGE, topSpace, useViewport, ZOOM_IN, ZOOM_OUT, type Box } from './useViewport';
 
@@ -13,7 +16,9 @@ const isSheet = (panel: HTMLElement) => getComputedStyle(panel).getPropertyValue
 /** If less height than this is left under the top bar, a revealed block may go under the top bar. */
 const MIN_AREA_H = 80;
 
-const allRows = (open: boolean) => Object.fromEntries(rowHeads.map((h) => [h, open]));
+const allRows = (heads: string[], open: boolean) => Object.fromEntries(heads.map((h) => [h, open]));
+
+const graphOf = (id: string) => graphs.find((g) => g.diagram.id === id) ?? graphs[0];
 
 export default function App() {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -21,14 +26,20 @@ export default function App() {
   const panelRef = useRef<HTMLElement>(null);
   const topbarRef = useRef<HTMLDivElement>(null);
   const vp = useViewport(svgRef, worldRef, topbarRef);
-  const { view, reveal, zoomCenter, fit, autoFit, markTouched } = vp;
+  const { view, reveal, zoomCenter, fit, autoFit, refit, markTouched } = vp;
   const { theme, toggleTheme } = useTheme();
 
+  // The diagram picked in the dropdown. The first one opens on page load.
+  const [diagramId, setDiagramId] = useState(graphs[0].diagram.id);
+  const graph = graphOf(diagramId);
+  const { byId, rowHeads, rowOf } = graph;
+
   // Timelines start collapsed.
-  const [rowOpen, setRowOpen] = useState<Record<string, boolean>>(() => allRows(false));
+  const [rowOpen, setRowOpen] = useState<Record<string, boolean>>(() => allRows(graph.rowHeads, false));
   // Selected block (null = panel closed) and the last opened block (kept for the slide-out).
+  // The block itself is kept, not its id: the same id can exist in another map, so it survives a map switch.
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [panelId, setPanelId] = useState<string | null>(null);
+  const [panelNode, setPanelNode] = useState<MapNode | null>(null);
   // Bumped on every open, so re-opening the same block still scrolls the panel and recentres.
   const [openSeq, setOpenSeq] = useState(0);
 
@@ -40,25 +51,37 @@ export default function App() {
       // Opening a block counts as using the map, so a resize no longer refits it and hides the block.
       markTouched();
       setSelectedId(id);
-      setPanelId(id);
+      setPanelNode(byId[id]);
       setOpenSeq((s) => s + 1);
     },
-    [markTouched],
+    [byId, markTouched],
   );
 
   const closePanel = useCallback(() => setSelectedId(null), []);
 
   const setRows = useCallback(
     (heads: string[], open: boolean) => {
-      setRowOpen((prev) => ({ ...prev, ...Object.fromEntries(heads.map((h) => [h, open])) }));
+      setRowOpen((prev) => ({ ...prev, ...allRows(heads, open) }));
       // Close the panel if its block is being hidden.
       if (!open && selectedId && heads.includes(rowOf[selectedId])) closePanel();
     },
-    [selectedId, closePanel],
+    [rowOf, selectedId, closePanel],
   );
   // Stable between pan and zoom frames, so the memoized map layers do not re-render.
   const toggleRow = useCallback((head: string) => setRows([head], !rowOpen[head]), [setRows, rowOpen]);
   const toggleAllRows = () => setRows(rowHeads, !anyRowOpen);
+
+  /** Show another map. It starts like a fresh page: timelines collapsed, no panel, fitted to the screen. */
+  const selectDiagram = useCallback(
+    (id: string) => {
+      if (id === diagramId) return;
+      setDiagramId(id);
+      setRowOpen(allRows(graphOf(id).rowHeads, false));
+      // An open panel slides out with the old block still in it.
+      setSelectedId(null);
+    },
+    [diagramId],
+  );
 
   /** The screen area (pixels) not under the top bar, the zoom controls or, if `panelOpen`, the panel. */
   const freeArea = useCallback((panelOpen: boolean): Box | undefined => {
@@ -108,8 +131,8 @@ export default function App() {
 
   /* On close: if focus was in the panel, give it back to the block that opened it. */
   useLayoutEffect(() => {
-    if (selectedId || !panelId || !panelRef.current?.contains(document.activeElement)) return;
-    svgRef.current?.querySelector<SVGGElement>(`[data-id="${panelId}"]`)?.focus({ preventScroll: true });
+    if (selectedId || !panelNode || !panelRef.current?.contains(document.activeElement)) return;
+    svgRef.current?.querySelector<SVGGElement>(`[data-id="${panelNode.id}"]`)?.focus({ preventScroll: true });
     // Runs only when the selection changes.
   }, [selectedId]);
 
@@ -127,10 +150,20 @@ export default function App() {
     };
   }, [autoFit]);
 
+  /* Another map: fit it. Runs before paint, so the old view never shows with the new map.
+     The first map is skipped: the start effect above already fitted it. */
+  const fittedId = useRef(diagramId);
+  useLayoutEffect(() => {
+    if (fittedId.current === diagramId) return;
+    fittedId.current = diagramId;
+    refit();
+  }, [diagramId, refit]);
+
   /* Keyboard shortcuts: + / - zoom, 0 fits, Escape closes the panel. */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
+      // The map dropdown keeps focus after a pick. It uses only arrows, Enter, Space and letters, so the shortcuts still work there.
       if (t && /input|textarea/i.test(t.tagName)) return;
       // Keys inside a popup (such as "What's new") belong to it. Escape there closes only the popup.
       if (t?.closest?.('dialog')) return;
@@ -148,6 +181,7 @@ export default function App() {
   return (
     <div className="app">
       <MapCanvas
+        graph={graph}
         svgRef={svgRef}
         worldRef={worldRef}
         vp={vp}
@@ -160,7 +194,8 @@ export default function App() {
       />
 
       <div className="topbar" ref={topbarRef}>
-        <h1>HCMUTE DSC Mentoring Program</h1>
+        <h1 className="sr-only">HCMUTE DSC Programs</h1>
+        <DiagramPicker diagrams={diagrams} activeId={diagramId} onSelect={selectDiagram} />
         <p>Click a block to see details.</p>
         <p className="long">Scroll to zoom. Drag to move.</p>
       </div>
@@ -173,6 +208,7 @@ export default function App() {
           zoom={view.k}
           zoomByUser={vp.byUser}
           anyRowOpen={anyRowOpen}
+          rowsName={rowHeads.length ? (graph.diagram.rowsName ?? 'timelines') : undefined}
           onZoomOut={() => zoomCenter(ZOOM_OUT)}
           onZoomIn={() => zoomCenter(ZOOM_IN)}
           onFit={fitMap}
@@ -181,12 +217,7 @@ export default function App() {
         <WhatsNew />
       </div>
 
-      <DetailPanel
-        ref={panelRef}
-        node={panelId ? byId[panelId] : null}
-        open={selectedId !== null}
-        onClose={closePanel}
-      />
+      <DetailPanel ref={panelRef} node={panelNode} open={selectedId !== null} onClose={closePanel} />
     </div>
   );
 }

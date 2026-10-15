@@ -55,3 +55,25 @@ export interface Edge {
   /** Timeline head id. The edge hides when that timeline is collapsed. */
   row?: string;
 }
+
+/** A collapsible timeline: a head block and the row of phases after it. */
+export interface Row {
+  /** The block that leads to the head. Without it, the diagram draws that connector itself. */
+  group?: string;
+  head: string;
+  phases: string[];
+  c: Track;
+}
+
+/** One map. The dropdown in the top bar picks which one is shown. */
+export interface Diagram {
+  id: string;
+  /** Name in the map dropdown. */
+  name: string;
+  /** What the rows are called on the "Show …" button. Defaults to "timelines". */
+  rowsName?: string;
+  nodes: MapNode[];
+  /** Connectors other than the timeline rows. The rows add their own. */
+  edges: Edge[];
+  rows: Row[];
+}

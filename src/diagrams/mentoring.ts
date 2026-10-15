@@ -1,7 +1,8 @@
-import type { MapNode } from './types';
+import type { Diagram, Edge, MapNode } from '../types';
+import { ARROW_GAP, bottomY, indexById, midX } from './helpers';
 
 /* Rows: A1 centre y=80, A2 centre y=260, B1 centre y=440. Phases start at x=1540, one every 180. */
-export const nodes: MapNode[] = [
+const nodes: MapNode[] = [
   {
     id: 'root',
     k: 'root',
@@ -1106,3 +1107,67 @@ export const nodes: MapNode[] = [
     },
   },
 ];
+
+const { trackA, trackB, moveup, joinA, w1, w4 } = indexById(nodes);
+
+const edges: Edge[] = [
+  { a: 'root', b: 's-groups' },
+  { a: 'root', b: 's-week' },
+
+  { a: 's-groups', b: 'trackA', c: 'a' },
+  { a: 's-groups', b: 'trackB', c: 'b' },
+  { a: 'trackA', b: 'a1', c: 'a' },
+  { a: 'trackA', b: 'a2', c: 'a' },
+  { a: 'trackB', b: 'b1', c: 'b', line: true },
+  // Track A -> "Move up" -> Track B, and Track B -> "Join A" -> Track A.
+  {
+    p: [
+      [midX(moveup), bottomY(trackA)],
+      [midX(moveup), moveup.y],
+    ],
+    c: 'b',
+    noArrow: true,
+  },
+  {
+    p: [
+      [midX(moveup), bottomY(moveup)],
+      [midX(moveup), trackB.y - ARROW_GAP],
+    ],
+    c: 'b',
+  },
+  {
+    p: [
+      [midX(joinA), trackB.y],
+      [midX(joinA), bottomY(joinA)],
+    ],
+    c: 'a',
+    noArrow: true,
+  },
+  {
+    p: [
+      [midX(joinA), joinA.y],
+      [midX(joinA), bottomY(trackA) + ARROW_GAP],
+    ],
+    c: 'a',
+  },
+
+  { a: 's-week', b: 'w1' },
+  { a: 'w1', b: 'w2', line: true },
+  { a: 'w2', b: 'w3', line: true },
+  { a: 'w3', b: 'w4', line: true },
+  // Loop back from the last weekly step to Monday, 30 units above the row.
+  { d: `M${midX(w4)} ${w4.y} V${w4.y - 30} H${midX(w1)} V${w1.y - ARROW_GAP}`, dash: true, label: 'next Monday' },
+];
+
+export const mentoring: Diagram = {
+  id: 'mentoring',
+  name: 'Mentoring Program',
+  rowsName: 'timelines',
+  nodes,
+  edges,
+  rows: [
+    { group: 'a1', head: 'a1t', phases: ['a1p1', 'a1p2', 'a1p3', 'a1p4', 'a1p5', 'a1p6'], c: 'a' },
+    { group: 'a2', head: 'a2t', phases: ['a2p1', 'a2p2', 'a2p3', 'a2p4', 'a2p5', 'a2p6', 'a2p7', 'a2p8'], c: 'a' },
+    { group: 'b1', head: 's-time', phases: ['p1', 'p2', 'p3', 'p4', 'p5'], c: 'b' },
+  ],
+};
