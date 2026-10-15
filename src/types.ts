@@ -70,7 +70,7 @@ export interface Diagram {
   id: string;
   /** Name in the map dropdown. */
   name: string;
-  /** What the rows are called on the "Show …" button, such as "timelines". Needed only if there are rows. */
+  /** What the rows are called on the "Show …" button. Defaults to "timelines". */
   rowsName?: string;
   nodes: MapNode[];
   /** Connectors other than the timeline rows. The rows add their own. */

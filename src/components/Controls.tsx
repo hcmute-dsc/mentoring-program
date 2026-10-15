@@ -5,7 +5,7 @@ interface Props {
   /** True when the last zoom change came from the user, not from the automatic fit. */
   zoomByUser: { readonly current: boolean };
   anyRowOpen: boolean;
-  /** What the rows are called, such as "timelines". Without it, the map has no rows and the button is not shown. */
+  /** What the rows are called, such as "timelines". Not set when the map has no rows, and then the button is not shown. */
   rowsName?: string;
   onZoomIn: () => void;
   onZoomOut: () => void;

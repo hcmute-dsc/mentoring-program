@@ -60,6 +60,8 @@ export interface Graph {
   drawnEdges: (Edge & { path: string })[];
   /** Timeline head ids. */
   rowHeads: string[];
+  /** The same ids as a set, for a fast check per node. */
+  rowHeadSet: Set<string>;
   /** Which timeline head a node belongs to, if any. */
   rowOf: Record<string, string>;
   /** One rounded frame per timeline, drawn around all of its phases. */
@@ -98,6 +100,7 @@ function buildGraph(diagram: Diagram): Graph {
     byId,
     drawnEdges: edges.map((e) => ({ ...e, path: edgePath(e, byId) })),
     rowHeads: rows.map((r) => r.head),
+    rowHeadSet: new Set(rows.map((r) => r.head)),
     rowOf,
     rowFrames,
   };

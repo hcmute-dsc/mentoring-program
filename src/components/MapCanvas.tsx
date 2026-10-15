@@ -343,9 +343,8 @@ interface MapLayersProps {
  * Memoized: they only change when a timeline or the selection changes, not on every pan or zoom frame.
  */
 const MapLayers = memo(function MapLayers({ graph, rowOpen, selectedId, onOpenNode, onToggleRow }: MapLayersProps) {
-  const { nodes, drawnEdges, rowFrames, rowOf } = graph;
+  const { nodes, drawnEdges, rowFrames, rowOf, rowHeadSet } = graph;
   const hidden = (id: string) => !!rowOf[id] && !rowOpen[rowOf[id]];
-  const isRowHead = (id: string) => rowFrames.some((f) => f.head === id);
 
   return (
     <>
@@ -398,7 +397,7 @@ const MapLayers = memo(function MapLayers({ graph, rowOpen, selectedId, onOpenNo
                 }
               }}
             />
-            {isRowHead(n.id) && <RowToggle n={n} open={!!rowOpen[n.id]} onToggle={onToggleRow} />}
+            {rowHeadSet.has(n.id) && <RowToggle n={n} open={!!rowOpen[n.id]} onToggle={onToggleRow} />}
           </Fragment>
         ))}
       </g>

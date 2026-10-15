@@ -373,6 +373,8 @@ body {
   margin: 0;
   opacity: 0;
   font: inherit;
+  /* iOS Safari zooms the page when a field under 16px gets focus. The select is invisible, so the size does not show. */
+  font-size: 16px;
   cursor: pointer;
 }
 /* The open list uses the page colors in both themes. */

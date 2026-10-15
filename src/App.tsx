@@ -7,6 +7,7 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { WhatsNew } from './components/WhatsNew';
 import { diagrams } from './diagrams';
 import { graphs } from './graph';
+import type { MapNode } from './types';
 import { useTheme } from './useTheme';
 import { CONTROLS_SPACE, EDGE, topSpace, useViewport, ZOOM_IN, ZOOM_OUT, type Box } from './useViewport';
 
@@ -36,8 +37,9 @@ export default function App() {
   // Timelines start collapsed.
   const [rowOpen, setRowOpen] = useState<Record<string, boolean>>(() => allRows(graph.rowHeads, false));
   // Selected block (null = panel closed) and the last opened block (kept for the slide-out).
+  // The block itself is kept, not its id: the same id can exist in another map, so it survives a map switch.
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [panelId, setPanelId] = useState<string | null>(null);
+  const [panelNode, setPanelNode] = useState<MapNode | null>(null);
   // Bumped on every open, so re-opening the same block still scrolls the panel and recentres.
   const [openSeq, setOpenSeq] = useState(0);
 
@@ -49,7 +51,7 @@ export default function App() {
       // Opening a block counts as using the map, so a resize no longer refits it and hides the block.
       markTouched();
       setSelectedId(id);
-      setPanelId(id);
+      setPanelNode(byId[id]);
       setOpenSeq((s) => s + 1);
     },
     [byId, markTouched],
@@ -59,7 +61,7 @@ export default function App() {
 
   const setRows = useCallback(
     (heads: string[], open: boolean) => {
-      setRowOpen((prev) => ({ ...prev, ...Object.fromEntries(heads.map((h) => [h, open])) }));
+      setRowOpen((prev) => ({ ...prev, ...allRows(heads, open) }));
       // Close the panel if its block is being hidden.
       if (!open && selectedId && heads.includes(rowOf[selectedId])) closePanel();
     },
@@ -75,8 +77,8 @@ export default function App() {
       if (id === diagramId) return;
       setDiagramId(id);
       setRowOpen(allRows(graphOf(id).rowHeads, false));
+      // An open panel slides out with the old block still in it.
       setSelectedId(null);
-      setPanelId(null);
     },
     [diagramId],
   );
@@ -129,8 +131,8 @@ export default function App() {
 
   /* On close: if focus was in the panel, give it back to the block that opened it. */
   useLayoutEffect(() => {
-    if (selectedId || !panelId || !panelRef.current?.contains(document.activeElement)) return;
-    svgRef.current?.querySelector<SVGGElement>(`[data-id="${panelId}"]`)?.focus({ preventScroll: true });
+    if (selectedId || !panelNode || !panelRef.current?.contains(document.activeElement)) return;
+    svgRef.current?.querySelector<SVGGElement>(`[data-id="${panelNode.id}"]`)?.focus({ preventScroll: true });
     // Runs only when the selection changes.
   }, [selectedId]);
 
@@ -148,8 +150,12 @@ export default function App() {
     };
   }, [autoFit]);
 
-  /* Another map: fit it. Runs before paint, so the old view never shows with the new map. */
+  /* Another map: fit it. Runs before paint, so the old view never shows with the new map.
+     The first map is skipped: the start effect above already fitted it. */
+  const fittedId = useRef(diagramId);
   useLayoutEffect(() => {
+    if (fittedId.current === diagramId) return;
+    fittedId.current = diagramId;
     refit();
   }, [diagramId, refit]);
 
@@ -157,7 +163,8 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
-      if (t && /input|textarea|select/i.test(t.tagName)) return;
+      // The map dropdown keeps focus after a pick. It uses only arrows, Enter, Space and letters, so the shortcuts still work there.
+      if (t && /input|textarea/i.test(t.tagName)) return;
       // Keys inside a popup (such as "What's new") belong to it. Escape there closes only the popup.
       if (t?.closest?.('dialog')) return;
       // Leave browser shortcuts (such as Ctrl/Cmd + '+' for page zoom) to the browser.
@@ -201,7 +208,7 @@ export default function App() {
           zoom={view.k}
           zoomByUser={vp.byUser}
           anyRowOpen={anyRowOpen}
-          rowsName={rowHeads.length ? graph.diagram.rowsName : undefined}
+          rowsName={rowHeads.length ? (graph.diagram.rowsName ?? 'timelines') : undefined}
           onZoomOut={() => zoomCenter(ZOOM_OUT)}
           onZoomIn={() => zoomCenter(ZOOM_IN)}
           onFit={fitMap}
@@ -210,12 +217,7 @@ export default function App() {
         <WhatsNew />
       </div>
 
-      <DetailPanel
-        ref={panelRef}
-        node={panelId ? byId[panelId] : null}
-        open={selectedId !== null}
-        onClose={closePanel}
-      />
+      <DetailPanel ref={panelRef} node={panelNode} open={selectedId !== null} onClose={closePanel} />
     </div>
   );
 }
