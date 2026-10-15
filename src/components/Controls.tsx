@@ -5,6 +5,8 @@ interface Props {
   /** True when the last zoom change came from the user, not from the automatic fit. */
   zoomByUser: { readonly current: boolean };
   anyRowOpen: boolean;
+  /** What the rows are called, such as "timelines". Without it, the map has no rows and the button is not shown. */
+  rowsName?: string;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onFit: () => void;
@@ -14,7 +16,7 @@ interface Props {
 /** How long the zoom must stay still before screen readers hear it. */
 const ANNOUNCE_DELAY = 500;
 
-export function Controls({ zoom, zoomByUser, anyRowOpen, onZoomIn, onZoomOut, onFit, onToggleRows }: Props) {
+export function Controls({ zoom, zoomByUser, anyRowOpen, rowsName, onZoomIn, onZoomOut, onFit, onToggleRows }: Props) {
   const pct = Math.round(zoom * 100);
 
   // The zoom changes on every animation, wheel and pinch frame, so speak it only once it stops.
@@ -43,9 +45,11 @@ export function Controls({ zoom, zoomByUser, anyRowOpen, onZoomIn, onZoomOut, on
       <button type="button" id="zfit" className="rows" onClick={onFit}>
         Fit
       </button>
-      <button type="button" id="zrows" className="rows" onClick={onToggleRows}>
-        {anyRowOpen ? 'Hide timelines' : 'Show timelines'}
-      </button>
+      {rowsName && (
+        <button type="button" id="zrows" className="rows" onClick={onToggleRows}>
+          {(anyRowOpen ? 'Hide ' : 'Show ') + rowsName}
+        </button>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
-# HCMUTE DSC Mentoring Guide
+# HCMUTE DSC Programs
 
-An interactive map of the HCMUTE DSC mentoring program, built with React, TypeScript, and Vite.
+Interactive maps of HCMUTE DSC programs, built with React, TypeScript, and Vite.
+There are two maps: the Git & GitHub Study Jam (shown first) and the Mentoring Program.
 
 ## Run
 
@@ -13,6 +14,7 @@ npm run preview  # serve the production build
 
 ## How to use
 
+- Pick a map in the dropdown at the top-left (the map title).
 - Click a block to see its details in the side panel (a bottom sheet on phones).
 - Drag to move the map. Scroll or pinch to zoom. On a trackpad, swipe up or down with two fingers to zoom.
 - Click `+` / `−` on a timeline block to show or hide its phases. "Show timelines" opens all of them.
@@ -22,10 +24,11 @@ npm run preview  # serve the production build
 
 ## Where things are
 
-- `src/nodes.ts` – all blocks: position, size, label, and panel content.
-- `src/graph.ts` – connectors between blocks and the timeline rows.
+- `src/diagrams/` – one file per map: its blocks (position, size, label, and panel content), connectors, and timeline rows.
+  `src/diagrams/index.ts` lists the maps in dropdown order. To add a map, add a file and list it there.
+- `src/graph.ts` – turns each map into what the canvas draws: connector paths and timeline frames.
 - `src/useViewport.ts` – pan, zoom, and "fit" logic.
-- `src/components/` – the map canvas, detail panel, and zoom controls.
+- `src/components/` – the map canvas, map dropdown, detail panel, and zoom controls.
 - `src/styles.css` – all styles, with light and dark themes.
 - `src/useTheme.ts` and `public/theme.js` – the light / dark theme switch.
 - `src/changelog.ts` – release notes for the "What's new" popup.

@@ -9,12 +9,14 @@ import {
   type RefObject,
 } from 'react';
 import logo from '../assets/logo.jpg';
-import { byId, drawnEdges, nodes, rowFrames, rowHeads, rowOf } from '../graph';
+import type { Graph } from '../graph';
 import type { MapNode } from '../types';
 import { clamp, type Box, type Viewport } from '../useViewport';
 import { EdgeLabel } from './EdgeLabel';
 
 interface Props {
+  /** The diagram to draw. */
+  graph: Graph;
   svgRef: RefObject<SVGSVGElement>;
   worldRef: RefObject<SVGGElement>;
   vp: Viewport;
@@ -51,7 +53,6 @@ const isActivateKey = (e: KeyboardEvent) => e.key === 'Enter' || e.key === ' ';
 
 /** Radius of the +/- timeline toggle. */
 const TOGGLE_R = 14;
-const isRowHead = new Set(rowHeads);
 
 /**
  * Zoom speed per pixel of wheel movement. A pinch (Ctrl + wheel) sends small steps, so it needs a higher speed.
@@ -75,6 +76,7 @@ function isFocusVisible(el: Element) {
 }
 
 export function MapCanvas({
+  graph,
   svgRef,
   worldRef,
   vp,
@@ -251,9 +253,9 @@ export function MapCanvas({
     if (!isFocusVisible(el)) return;
     const id = el.getAttribute('data-id');
     const head = el.getAttribute('data-toggle');
-    if (id) onFocusBox(byId[id]);
+    if (id) onFocusBox(graph.byId[id]);
     else if (head) {
-      const n = byId[head];
+      const n = graph.byId[head];
       onFocusBox({ x: n.x + n.w - TOGGLE_R, y: n.y + n.h / 2 - TOGGLE_R, w: TOGGLE_R * 2, h: TOGGLE_R * 2 });
     }
   };
@@ -270,7 +272,7 @@ export function MapCanvas({
         id="svg"
         ref={svgRef}
         role="group"
-        aria-label="Map of the DSC mentoring program. Select a block to read its details."
+        aria-label={`Map of the ${graph.diagram.name}. Select a block to read its details.`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endPointer}
@@ -315,7 +317,13 @@ export function MapCanvas({
           </marker>
         </defs>
         <g id="world" ref={worldRef} transform={`translate(${view.x} ${view.y}) scale(${view.k})`}>
-          <MapLayers rowOpen={rowOpen} selectedId={selectedId} onOpenNode={onOpenNode} onToggleRow={onToggleRow} />
+          <MapLayers
+            graph={graph}
+            rowOpen={rowOpen}
+            selectedId={selectedId}
+            onOpenNode={onOpenNode}
+            onToggleRow={onToggleRow}
+          />
         </g>
       </svg>
     </div>
@@ -323,6 +331,7 @@ export function MapCanvas({
 }
 
 interface MapLayersProps {
+  graph: Graph;
   rowOpen: Record<string, boolean>;
   selectedId: string | null;
   onOpenNode: (id: string) => void;
@@ -333,8 +342,10 @@ interface MapLayersProps {
  * Edges, labels, blocks and timeline toggles.
  * Memoized: they only change when a timeline or the selection changes, not on every pan or zoom frame.
  */
-const MapLayers = memo(function MapLayers({ rowOpen, selectedId, onOpenNode, onToggleRow }: MapLayersProps) {
+const MapLayers = memo(function MapLayers({ graph, rowOpen, selectedId, onOpenNode, onToggleRow }: MapLayersProps) {
+  const { nodes, drawnEdges, rowFrames, rowOf } = graph;
   const hidden = (id: string) => !!rowOf[id] && !rowOpen[rowOf[id]];
+  const isRowHead = (id: string) => rowFrames.some((f) => f.head === id);
 
   return (
     <>
@@ -367,11 +378,10 @@ const MapLayers = memo(function MapLayers({ rowOpen, selectedId, onOpenNode, onT
         })}
       </g>
       <g>
-        {drawnEdges
-          .filter((e) => e.label)
-          .map((e, i) => (
-            <EdgeLabel key={i} d={e.path} label={e.label!} />
-          ))}
+        {/* A label of a closed timeline is not rendered at all, because a hidden label cannot measure its text. */}
+        {drawnEdges.map(
+          (e, i) => e.label && !(e.row && !rowOpen[e.row]) && <EdgeLabel key={i} d={e.path} label={e.label} />,
+        )}
       </g>
       <g>
         {/* Each timeline toggle comes right after its block, so the Tab order is: block, toggle, phases. */}
@@ -388,7 +398,7 @@ const MapLayers = memo(function MapLayers({ rowOpen, selectedId, onOpenNode, onT
                 }
               }}
             />
-            {isRowHead.has(n.id) && <RowToggle n={n} open={!!rowOpen[n.id]} onToggle={onToggleRow} />}
+            {isRowHead(n.id) && <RowToggle n={n} open={!!rowOpen[n.id]} onToggle={onToggleRow} />}
           </Fragment>
         ))}
       </g>
