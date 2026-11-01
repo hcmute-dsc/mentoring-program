@@ -9,16 +9,20 @@ const nodes: MapNode[] = [
     y: 234,
     w: 280,
     h: 172,
-    t: 'Git & GitHub Study Jam',
-    s: '5 weeks',
+    t: 'Study Jam',
+    s: '2 tracks',
     img: true,
     d: {
       tag: 'Overview',
-      title: 'Git & GitHub Study Jam',
-      text: 'Learn Git and GitHub by working as a team. Each team builds a small website together, one page at a time, and practices a new part of the Git workflow every week.',
+      title: 'Study Jam',
+      text: 'Learn by working as a team. The Study Jam has two tracks: Git & GitHub, and Docker.',
       groups: [
         {
-          h: 'Timeline',
+          h: 'Tracks',
+          items: ['Git & GitHub: 5 weeks', 'Docker'],
+        },
+        {
+          h: 'Git & GitHub timeline',
           items: [
             'Week 1 · Kickoff: Git and GitHub basics',
             'Week 2 · Home page: branches and pull requests',
@@ -37,11 +41,27 @@ const nodes: MapNode[] = [
     y: 290,
     w: 210,
     h: 60,
-    t: 'Timeline',
+    t: 'Git & GitHub',
     s: '5 weeks',
     d: {
-      tag: 'Schedule',
-      text: 'Five weeks, from the kickoff to the closing ceremony. Each week adds one new part of the Git and GitHub workflow.',
+      tag: 'Track 1',
+      title: 'Git & GitHub',
+      text: 'Each team builds a small website together, one page at a time. Five weeks, from the kickoff to the closing ceremony. Each week adds one new part of the Git and GitHub workflow.',
+    },
+  },
+  {
+    id: 's-docker',
+    k: 'sec',
+    x: 360,
+    y: 650,
+    w: 210,
+    h: 60,
+    t: 'Docker',
+    s: 'Track 2',
+    d: {
+      tag: 'Track 2',
+      title: 'Docker',
+      text: 'The second track of the Study Jam. The plan will be added soon.',
     },
   },
   {
@@ -189,6 +209,7 @@ const nodes: MapNode[] = [
 
 const edges: Edge[] = [
   { a: 'root', b: 's-time', line: true },
+  { a: 'root', b: 's-docker', line: true },
   { a: 's-time', b: 'wk1', c: 'a' },
   { a: 's-time', b: 'wk2', c: 'a' },
   { a: 's-time', b: 'wk3', c: 'a', line: true },
@@ -198,7 +219,7 @@ const edges: Edge[] = [
 
 export const gitStudyJam: Diagram = {
   id: 'git-study-jam',
-  name: 'Git & GitHub Study Jam',
+  name: 'Study Jam',
   nodes,
   edges,
   rows: [],

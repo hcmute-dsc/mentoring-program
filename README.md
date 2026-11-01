@@ -1,7 +1,7 @@
 # HCMUTE DSC Programs
 
 Interactive maps of HCMUTE DSC programs, built with React, TypeScript, and Vite.
-There are two maps: the Git & GitHub Study Jam (shown first) and the Mentoring Program.
+There are two maps: the Study Jam (shown first, with a Git & GitHub track and a Docker track) and the Mentoring Program.
 
 ## Run
 
