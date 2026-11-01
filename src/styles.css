@@ -450,6 +450,25 @@ body {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.lang-toggle {
+  right: 62px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: auto;
+  padding: 0 4px;
+  font: 600 0.78rem var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.lang-toggle span {
+  padding: 4px 6px;
+  color: var(--muted);
+  border-radius: 6px;
+}
+.lang-toggle span.on {
+  color: var(--bg);
+  background: var(--fg);
+}
 /* Version tag in the bottom-right corner. A click opens "What's new". The detail panel slides over it. */
 .version {
   margin-left: auto;

@@ -11,6 +11,7 @@ import {
 import logo from '../assets/logo.jpg';
 import type { Graph } from '../graph';
 import type { MapNode } from '../types';
+import { useLang } from '../useLang';
 import { clamp, type Box, type Viewport } from '../useViewport';
 import { EdgeLabel } from './EdgeLabel';
 
@@ -87,6 +88,7 @@ export function MapCanvas({
   onBackgroundClick,
   onFocusBox,
 }: Props) {
+  const { text } = useLang();
   const stageRef = useRef<HTMLDivElement>(null);
   const pointers = useRef(new Map<number, Point>());
   const drag = useRef<DragState | null>(null);
@@ -272,7 +274,7 @@ export function MapCanvas({
         id="svg"
         ref={svgRef}
         role="group"
-        aria-label={`Map of the ${graph.diagram.name}. Select a block to read its details.`}
+        aria-label={text.mapAria(graph.diagram.name)}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endPointer}
@@ -413,6 +415,7 @@ interface RowToggleProps {
 
 /** The +/- button on the right edge of a timeline block. */
 function RowToggle({ n, open, onToggle }: RowToggleProps) {
+  const { text } = useLang();
   const cx = n.x + n.w,
     cy = n.y + n.h / 2;
   return (
@@ -421,7 +424,7 @@ function RowToggle({ n, open, onToggle }: RowToggleProps) {
       tabIndex={0}
       role="button"
       data-toggle={n.id}
-      aria-label={'Show or hide ' + n.t}
+      aria-label={text.showOrHide(n.t)}
       aria-expanded={open}
       // A held key repeats. Act once, so the timeline does not flicker open and closed.
       onKeyDown={(e) => {

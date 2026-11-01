@@ -19,7 +19,7 @@ const nodes: MapNode[] = [
       groups: [
         {
           h: 'Tracks',
-          items: ['Git & GitHub: 5 weeks', 'Docker'],
+          items: ['Git & GitHub: 5 weeks', 'Docker: 2 weeks'],
         },
         {
           h: 'Git & GitHub timeline',

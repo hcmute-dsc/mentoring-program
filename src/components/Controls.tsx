@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLang } from '../useLang';
 
 interface Props {
   zoom: number;
@@ -18,6 +19,7 @@ const ANNOUNCE_DELAY = 500;
 
 export function Controls({ zoom, zoomByUser, anyRowOpen, rowsName, onZoomIn, onZoomOut, onFit, onToggleRows }: Props) {
   const pct = Math.round(zoom * 100);
+  const { text } = useLang();
 
   // The zoom changes on every animation, wheel and pinch frame, so speak it only once it stops.
   // The automatic fit (page load, font load, resize) is skipped: the user did not ask for it.
@@ -29,25 +31,25 @@ export function Controls({ zoom, zoomByUser, anyRowOpen, rowsName, onZoomIn, onZ
   }, [pct, zoomByUser]);
 
   return (
-    <div className="controls" role="group" aria-label="Zoom controls">
-      <button type="button" id="zout" aria-label="Zoom out" onClick={onZoomOut}>
+    <div className="controls" role="group" aria-label={text.zoomControls}>
+      <button type="button" id="zout" aria-label={text.zoomOut} onClick={onZoomOut}>
         −
       </button>
       <span className="pct" id="pct">
         {pct}%
       </span>
       <span className="sr-only" role="status">
-        {spoken && 'Zoom ' + spoken}
+        {spoken && text.zoom + ' ' + spoken}
       </span>
-      <button type="button" id="zin" aria-label="Zoom in" onClick={onZoomIn}>
+      <button type="button" id="zin" aria-label={text.zoomIn} onClick={onZoomIn}>
         +
       </button>
       <button type="button" id="zfit" className="rows" onClick={onFit}>
-        Fit
+        {text.fit}
       </button>
       {rowsName && (
         <button type="button" id="zrows" className="rows" onClick={onToggleRows}>
-          {(anyRowOpen ? 'Hide ' : 'Show ') + rowsName}
+          {(anyRowOpen ? text.hideRows : text.showRows)(text.rowNames[rowsName] ?? rowsName)}
         </button>
       )}
     </div>

@@ -1,4 +1,6 @@
 import { diagrams } from './diagrams';
+import { toVietnamese } from './diagrams/vi';
+import type { Lang } from './i18n';
 import { indexById } from './diagrams/helpers';
 import type { Diagram, Edge, MapNode, Row, Side, Track } from './types';
 
@@ -106,5 +108,8 @@ function buildGraph(diagram: Diagram): Graph {
   };
 }
 
-/** All diagrams, ready to draw, in dropdown order. */
-export const graphs: Graph[] = diagrams.map(buildGraph);
+/** All diagrams, ready to draw, in dropdown order. One list per language. */
+export const graphs: Record<Lang, Graph[]> = {
+  en: diagrams.map(buildGraph),
+  vi: diagrams.map((d) => buildGraph(toVietnamese(d))),
+};

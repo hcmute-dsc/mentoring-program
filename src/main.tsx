@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import { LangProvider } from './useLang';
 // Fonts are bundled with the site, so no request goes to a font service.
 import '@fontsource-variable/bricolage-grotesque/opsz.css';
 import '@fontsource/ibm-plex-sans/400.css';
@@ -12,6 +13,8 @@ import './styles.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <LangProvider>
+      <App />
+    </LangProvider>
   </StrictMode>,
 );

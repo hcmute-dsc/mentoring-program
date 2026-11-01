@@ -2,12 +2,13 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { Controls } from './components/Controls';
 import { DetailPanel } from './components/DetailPanel';
 import { DiagramPicker } from './components/DiagramPicker';
+import { LangToggle } from './components/LangToggle';
 import { MapCanvas } from './components/MapCanvas';
 import { ThemeToggle } from './components/ThemeToggle';
 import { WhatsNew } from './components/WhatsNew';
-import { diagrams } from './diagrams';
-import { graphs } from './graph';
+import { graphs, type Graph } from './graph';
 import type { MapNode } from './types';
+import { useLang } from './useLang';
 import { useTheme } from './useTheme';
 import { CONTROLS_SPACE, EDGE, topSpace, useViewport, ZOOM_IN, ZOOM_OUT, type Box } from './useViewport';
 
@@ -18,7 +19,7 @@ const MIN_AREA_H = 80;
 
 const allRows = (heads: string[], open: boolean) => Object.fromEntries(heads.map((h) => [h, open]));
 
-const graphOf = (id: string) => graphs.find((g) => g.diagram.id === id) ?? graphs[0];
+const graphOf = (list: Graph[], id: string) => list.find((g) => g.diagram.id === id) ?? list[0];
 
 export default function App() {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -28,10 +29,12 @@ export default function App() {
   const vp = useViewport(svgRef, worldRef, topbarRef);
   const { view, reveal, zoomCenter, fit, autoFit, refit, markTouched } = vp;
   const { theme, toggleTheme } = useTheme();
+  const { lang, text } = useLang();
 
   // The diagram picked in the dropdown. The first one opens on page load.
-  const [diagramId, setDiagramId] = useState(graphs[0].diagram.id);
-  const graph = graphOf(diagramId);
+  const [diagramId, setDiagramId] = useState(graphs.en[0].diagram.id);
+  // Same layout in every language, so a language change keeps the view, the open timelines and the open panel.
+  const graph = graphOf(graphs[lang], diagramId);
   const { byId, rowHeads, rowOf } = graph;
 
   // Timelines start collapsed.
@@ -76,11 +79,11 @@ export default function App() {
     (id: string) => {
       if (id === diagramId) return;
       setDiagramId(id);
-      setRowOpen(allRows(graphOf(id).rowHeads, false));
+      setRowOpen(allRows(graphOf(graphs[lang], id).rowHeads, false));
       // An open panel slides out with the old block still in it.
       setSelectedId(null);
     },
-    [diagramId],
+    [diagramId, lang],
   );
 
   /** The screen area (pixels) not under the top bar, the zoom controls or, if `panelOpen`, the panel. */
@@ -195,12 +198,13 @@ export default function App() {
 
       <div className="topbar" ref={topbarRef}>
         <h1 className="sr-only">HCMUTE DSC Programs</h1>
-        <DiagramPicker diagrams={diagrams} activeId={diagramId} onSelect={selectDiagram} />
-        <p>Click a block to see details.</p>
-        <p className="long">Scroll to zoom. Drag to move.</p>
+        <DiagramPicker diagrams={graphs[lang].map((g) => g.diagram)} activeId={diagramId} onSelect={selectDiagram} />
+        <p>{text.hint}</p>
+        <p className="long">{text.hintLong}</p>
       </div>
 
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
+      <LangToggle />
 
       {/* The zoom controls on the left, the version tag on the right. The tag moves above them if the row is too narrow. */}
       <div className="bottombar">

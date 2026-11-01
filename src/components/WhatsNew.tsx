@@ -1,5 +1,6 @@
 import { useRef, type MouseEvent } from 'react';
 import { releases } from '../changelog';
+import { useLang } from '../useLang';
 
 const current = releases.find((r) => r.version === __APP_VERSION__);
 const earlier = releases.filter((r) => r !== current);
@@ -10,6 +11,8 @@ const earlier = releases.filter((r) => r !== current);
  */
 export function WhatsNew() {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { lang, text } = useLang();
+  const itemsOf = (r: (typeof releases)[number]) => (lang === 'vi' && r.vi) || r.items;
 
   const open = () => dialogRef.current?.showModal();
   const close = () => dialogRef.current?.close();
@@ -24,8 +27,8 @@ export function WhatsNew() {
         type="button"
         className="version"
         aria-haspopup="dialog"
-        aria-label={`Version ${__APP_VERSION__}. What's new`}
-        title="What's new"
+        aria-label={text.version(__APP_VERSION__)}
+        title={text.whatsNew}
         onClick={open}
       >
         v{__APP_VERSION__}
@@ -39,30 +42,32 @@ export function WhatsNew() {
               {current && ' · ' + current.date}
             </span>
             <button type="button" className="close" onClick={close}>
-              Close
+              {text.close}
             </button>
           </div>
-          <h2 id="news-title">What's new</h2>
+          <h2 id="news-title">{text.whatsNew}</h2>
           {current ? (
             <ul>
-              {current.items.map((it, i) => (
+              {itemsOf(current).map((it, i) => (
                 <li key={i}>{it}</li>
               ))}
             </ul>
           ) : (
-            <p className="news-none">No notes for this version yet.</p>
+            <p className="news-none">{text.noNotes}</p>
           )}
           {earlier.length > 0 && (
             // One short row per old version, so a long history stays short until the user opens a row.
             <details className="news-earlier">
-              <summary>Earlier versions ({earlier.length})</summary>
+              <summary>
+                {text.earlier} ({earlier.length})
+              </summary>
               {earlier.map((r) => (
                 <details className="news-old" key={r.version}>
                   <summary>
                     v{r.version} · {r.date}
                   </summary>
                   <ul>
-                    {r.items.map((it, i) => (
+                    {itemsOf(r).map((it, i) => (
                       <li key={i}>{it}</li>
                     ))}
                   </ul>
