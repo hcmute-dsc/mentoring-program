@@ -50,7 +50,7 @@ const translations: Record<string, Translation> = {
       },
       's-docker': {
         t: 'Docker',
-        s: 'Nhánh 2',
+        s: '2 tuần',
         d: {
           tag: 'Nhánh 2',
           title: 'Docker',

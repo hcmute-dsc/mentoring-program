@@ -57,7 +57,7 @@ const nodes: MapNode[] = [
     w: 210,
     h: 60,
     t: 'Docker',
-    s: 'Track 2',
+    s: '2 weeks',
     d: {
       tag: 'Track 2',
       title: 'Docker',
