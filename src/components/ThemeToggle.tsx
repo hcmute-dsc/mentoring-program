@@ -1,3 +1,4 @@
+import { useLang } from '../useLang';
 import type { Theme } from '../useTheme';
 
 interface Props {
@@ -8,13 +9,14 @@ interface Props {
 /** Button in the top-right corner. It shows the theme it switches to: a moon in light theme, a sun in dark theme. */
 export function ThemeToggle({ theme, onToggle }: Props) {
   const next = theme === 'dark' ? 'light' : 'dark';
+  const { text } = useLang();
   return (
     <button
       type="button"
       className="theme-toggle"
       id="theme"
-      aria-label={`Switch to ${next} theme`}
-      title={`Switch to ${next} theme`}
+      aria-label={text.themeTo(next)}
+      title={text.themeTo(next)}
       onClick={onToggle}
     >
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">

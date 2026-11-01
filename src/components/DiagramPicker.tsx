@@ -1,4 +1,5 @@
 import type { Diagram } from '../types';
+import { useLang } from '../useLang';
 
 interface Props {
   diagrams: Diagram[];
@@ -13,6 +14,7 @@ interface Props {
  * so keyboards, screen readers and phone pickers work without extra code.
  */
 export function DiagramPicker({ diagrams, activeId, onSelect }: Props) {
+  const { text } = useLang();
   const name = diagrams.find((d) => d.id === activeId)?.name;
   return (
     <div className="picker">
@@ -23,7 +25,7 @@ export function DiagramPicker({ diagrams, activeId, onSelect }: Props) {
         <path d="M2.5 4.5 6 8l3.5-3.5" />
       </svg>
       <label className="sr-only" htmlFor="diagram">
-        Map
+        {text.mapLabel}
       </label>
       <select id="diagram" value={activeId} onChange={(e) => onSelect(e.target.value)}>
         {diagrams.map((d) => (

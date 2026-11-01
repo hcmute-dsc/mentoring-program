@@ -1,5 +1,6 @@
 import { forwardRef, memo } from 'react';
 import type { MapNode } from '../types';
+import { useLang } from '../useLang';
 
 interface Props {
   /** The last opened node. It stays set while the panel slides out, so the content does not vanish early. */
@@ -11,6 +12,7 @@ interface Props {
 /** Memoized, so it does not re-render on every pan or zoom frame. */
 export const DetailPanel = memo(
   forwardRef<HTMLElement, Props>(function DetailPanel({ node, open, onClose }, ref) {
+    const { text } = useLang();
     const d = node?.d;
     const title = d ? d.title || node.t : '';
     const sub = d ? (d.sub !== undefined ? d.sub : d.title ? '' : node.s || '') : '';
@@ -22,7 +24,7 @@ export const DetailPanel = memo(
             {d?.tag || ''}
           </span>
           <button type="button" className="close" id="p-close" onClick={onClose}>
-            Close
+            {text.close}
           </button>
         </div>
         <h2 id="p-title">{title}</h2>
@@ -34,7 +36,7 @@ export const DetailPanel = memo(
         </p>
         {d?.note && (
           <div className="note" role="note">
-            <span className="note-h">Required</span>
+            <span className="note-h">{text.required}</span>
             {d.note}
           </div>
         )}
@@ -51,7 +53,7 @@ export const DetailPanel = memo(
           ))}
           {d?.pre && (
             <div className="grp">
-              <h3>Example</h3>
+              <h3>{text.example}</h3>
               <pre>{d.pre}</pre>
             </div>
           )}
