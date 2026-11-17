@@ -735,6 +735,33 @@ body {
   text-transform: uppercase;
   color: var(--mentor);
 }
+/* Button that opens another page, such as the rules of a program. */
+.panel-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px 9px 14px;
+  font: 600 0.9rem var(--font-body);
+  color: var(--surface);
+  background: var(--track-a);
+  border-radius: 9px;
+  text-decoration: none;
+}
+.panel-link:hover {
+  filter: brightness(1.1);
+}
+.panel-link:focus-visible {
+  outline: 2px solid var(--track-a);
+  outline-offset: 2px;
+}
+.panel-link svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
 /* Phones: the panel becomes a bottom sheet. */
 @media (max-width: 640px) {

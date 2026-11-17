@@ -25,15 +25,14 @@ const translations: Record<string, Translation> = {
           title: 'Study Jam',
           text: 'Cùng học theo nhóm. Study Jam có hai nhánh: Git & GitHub, và Docker.',
           groups: [
-            { h: 'Các nhánh', items: ['Git & GitHub: 5 tuần', 'Docker: 2 tuần'] },
+            { h: 'Các nhánh', items: ['Git & GitHub: 4 tuần', 'Docker: 2 tuần'] },
             {
               h: 'Lộ trình Git & GitHub',
               items: [
-                'Tuần 1 · Khởi động: kiến thức cơ bản về Git và GitHub',
-                'Tuần 2 · Trang chủ: nhánh và pull request',
-                'Tuần 3 · Giới thiệu: nhiều nhánh cùng lúc',
-                'Tuần 4 · Liên hệ: review code và merge',
-                'Tuần 5 · Bế mạc: tổng kết và trình diễn',
+                'Tuần 1 · Khởi động và Trang chủ: Git cơ bản, nhánh và pull request',
+                'Tuần 2 · Giới thiệu: nhiều nhánh cùng lúc',
+                'Tuần 3 · Liên hệ: review code và merge',
+                'Tuần 4 · Bế mạc: tổng kết và trình diễn',
               ],
             },
           ],
@@ -41,11 +40,12 @@ const translations: Record<string, Translation> = {
       },
       's-time': {
         t: 'Git & GitHub',
-        s: '5 tuần',
+        s: '4 tuần',
         d: {
           tag: 'Nhánh 1',
           title: 'Git & GitHub',
-          text: 'Mỗi nhóm cùng xây một website nhỏ, từng trang một. Năm tuần, từ buổi khởi động đến buổi bế mạc. Mỗi tuần thêm một phần mới của quy trình Git và GitHub.',
+          text: 'Mỗi nhóm cùng xây một website nhỏ, từng trang một. Bốn tuần, từ buổi khởi động đến buổi bế mạc. Mỗi tuần thêm một phần mới của quy trình Git và GitHub.',
+          link: { href: 'git-github-rules/', label: 'Xem thể lệ chương trình' },
         },
       },
       's-docker': {
@@ -75,16 +75,16 @@ const translations: Record<string, Translation> = {
         },
       },
       wk1: {
-        t: 'Tuần 1 · Khởi động',
-        s: 'Git và GitHub cơ bản',
+        t: 'Tuần 1 · Khởi động và Trang chủ',
+        s: 'Cơ bản, nhánh và pull request',
         d: {
           tag: 'Tuần 1',
-          title: 'Khởi động',
-          sub: 'Git và GitHub cơ bản',
-          text: 'Làm quen với nhóm và chuẩn bị dùng Git và GitHub.',
+          title: 'Khởi động và Trang chủ',
+          sub: 'Git và GitHub cơ bản, nhánh và pull request',
+          text: 'Làm quen với nhóm và chuẩn bị dùng Git và GitHub. Sau đó trưởng nhóm khởi tạo codebase, và một thành viên làm trang Trang chủ.',
           groups: [
             {
-              h: 'Bạn học được gì',
+              h: 'Git và GitHub cơ bản',
               items: [
                 'Version control là gì, và vì sao các nhóm dùng nó',
                 'Khác nhau giữa Git (công cụ) và GitHub (website lưu trữ code)',
@@ -93,20 +93,8 @@ const translations: Record<string, Translation> = {
                 'Repository: tạo mới và clone về máy',
               ],
             },
-          ],
-        },
-      },
-      wk2: {
-        t: 'Tuần 2 · Trang chủ',
-        s: 'Nhánh và pull request',
-        d: {
-          tag: 'Tuần 2',
-          title: 'Trang chủ',
-          sub: 'Nhánh và pull request',
-          text: 'Trưởng nhóm khởi tạo codebase, và một thành viên làm trang Trang chủ.',
-          groups: [
             {
-              h: 'Bạn học được gì',
+              h: 'Nhánh và pull request',
               items: [
                 'Tạo nhánh từ main, hoặc từ một nhánh khác',
                 'Commit thay đổi với thông điệp rõ ràng bằng tiếng Anh',
@@ -117,11 +105,11 @@ const translations: Record<string, Translation> = {
           ],
         },
       },
-      wk3: {
-        t: 'Tuần 3 · Giới thiệu',
+      wk2: {
+        t: 'Tuần 2 · Giới thiệu',
         s: 'Nhiều nhánh cùng lúc',
         d: {
-          tag: 'Tuần 3',
+          tag: 'Tuần 2',
           title: 'Trang giới thiệu',
           sub: 'Nhiều nhánh cùng lúc',
           text: 'Mỗi thành viên thêm một phần giới thiệu về mình vào cùng một trang.',
@@ -138,11 +126,11 @@ const translations: Record<string, Translation> = {
           ],
         },
       },
-      wk4: {
-        t: 'Tuần 4 · Liên hệ',
+      wk3: {
+        t: 'Tuần 3 · Liên hệ',
         s: 'Review code và merge',
         d: {
-          tag: 'Tuần 4',
+          tag: 'Tuần 3',
           title: 'Trang liên hệ',
           sub: 'Review code và merge',
           text: 'Một thành viên làm trang Liên hệ, và trưởng nhóm review.',
@@ -160,11 +148,11 @@ const translations: Record<string, Translation> = {
           ],
         },
       },
-      wk5: {
-        t: 'Tuần 5 · Bế mạc',
+      wk4: {
+        t: 'Tuần 4 · Bế mạc',
         s: 'Tổng kết và trình diễn',
         d: {
-          tag: 'Tuần 5',
+          tag: 'Tuần 4',
           title: 'Bế mạc',
           sub: 'Tổng kết và trình diễn',
           text: 'Các nhóm giới thiệu website của mình và nhìn lại những gì đã học.',

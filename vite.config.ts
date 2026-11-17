@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 /**
  * Content-Security-Policy: the page may load only its own files.
@@ -31,6 +32,15 @@ export default defineConfig({
   // Relative asset paths, so the site also works from a sub-path (such as a GitHub Pages project page).
   base: './',
   plugins: [react(), csp()],
+  build: {
+    rollupOptions: {
+      // Two pages: the map, and the Git & GitHub Study Jam rules (served at /git-github-rules/).
+      input: {
+        main: resolve(import.meta.dirname, 'index.html'),
+        gitGithubRules: resolve(import.meta.dirname, 'git-github-rules/index.html'),
+      },
+    },
+  },
   // The version tag in the corner reads this, so package.json stays the only place to change it.
   define: { __APP_VERSION__: JSON.stringify(JSON.parse(readFileSync('package.json', 'utf8')).version) },
 });

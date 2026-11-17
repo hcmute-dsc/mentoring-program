@@ -20,6 +20,7 @@ npm run preview  # serve the production build
 - Click `+` / `−` on a timeline block to show or hide its phases. "Show timelines" opens all of them.
 - Keys: `+` / `-` zoom, `0` fits the map, `Esc` closes the panel.
 - Click the version tag in the bottom-right corner to see what is new in this version.
+- Click the Git & GitHub block, then "Read the program rules", to open the rules page. Its link can be shared: https://mentoring.hcmute-dsc.io.vn/git-github-rules/
 - Click the sun / moon button in the top-right corner to switch between the light and dark theme. The site follows the system theme until you pick one. Your choice is saved in the browser.
 
 ## Where things are
@@ -32,6 +33,9 @@ npm run preview  # serve the production build
 - `src/styles.css` – all styles, with light and dark themes.
 - `src/useTheme.ts` and `public/theme.js` – the light / dark theme switch.
 - `src/changelog.ts` – release notes for the "What's new" popup.
+- `git-github-rules/index.html` and `src/rules/` – the Git & GitHub Study Jam rules page.
+  Its text (English and Vietnamese) is in `src/rules/gitGithubRules.ts`.
+  Vite builds it as a second page (see `build.rollupOptions.input` in `vite.config.ts`).
 
 ## Release a new version
 
