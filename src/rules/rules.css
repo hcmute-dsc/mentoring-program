@@ -139,21 +139,20 @@ html {
   gap: 10px;
   margin-top: 4px;
 }
-/* The main action of the page: open the registration form. */
+/* The main action of the page: open the registration form. Same look as the "Read the program rules" button on the map. */
 .doc-register {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 10px 16px 10px 18px;
   font: 600 0.95rem var(--font-body);
-  color: var(--brand-fg);
-  background: var(--brand);
-  border: 1.5px solid var(--brand-line);
-  border-radius: 10px;
+  color: var(--surface);
+  background: var(--track-a);
+  border-radius: 9px;
   text-decoration: none;
 }
 .doc-register:hover {
-  background: color-mix(in srgb, var(--brand) 85%, var(--brand-line));
+  filter: brightness(1.1);
 }
 .doc-register:focus-visible {
   outline: 2px solid var(--track-a);

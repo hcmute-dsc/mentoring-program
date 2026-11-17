@@ -1,6 +1,6 @@
 import type { Diagram, Edge, MapNode } from '../types';
 
-/* Git weeks: centres at y=80, 200, 320, 440 and 560. Docker weeks: centres at y=680 and 800. The Git & GitHub node sits at y=320 and the Docker node at y=740, each in the middle of its weeks. The root sits between them, at y=530. */
+/* Git weeks: centres at y=140, 260, 380 and 500, around the Git & GitHub node. Docker weeks: centres at y=680 and 800. The Git & GitHub node sits at y=320 and the Docker node at y=740, each in the middle of its weeks. The root sits between them, at y=530. */
 const nodes: MapNode[] = [
   {
     id: 'root',
@@ -19,16 +19,15 @@ const nodes: MapNode[] = [
       groups: [
         {
           h: 'Tracks',
-          items: ['Git & GitHub: 5 weeks', 'Docker: 2 weeks'],
+          items: ['Git & GitHub: 4 weeks', 'Docker: 2 weeks'],
         },
         {
           h: 'Git & GitHub timeline',
           items: [
-            'Week 1 · Kickoff: Git and GitHub basics',
-            'Week 2 · Home page: branches and pull requests',
-            'Week 3 · About us: many branches at the same time',
-            'Week 4 · Contact: code review and merge',
-            'Week 5 · Closing ceremony: recap and showcase',
+            'Week 1 · Kickoff and Home page: Git basics, branches and pull requests',
+            'Week 2 · About us: many branches at the same time',
+            'Week 3 · Contact: code review and merge',
+            'Week 4 · Closing ceremony: recap and showcase',
           ],
         },
       ],
@@ -42,11 +41,11 @@ const nodes: MapNode[] = [
     w: 210,
     h: 60,
     t: 'Git & GitHub',
-    s: '5 weeks',
+    s: '4 weeks',
     d: {
       tag: 'Track 1',
       title: 'Git & GitHub',
-      text: 'Each team builds a small website together, one page at a time. Five weeks, from the kickoff to the closing ceremony. Each week adds one new part of the Git and GitHub workflow.',
+      text: 'Each team builds a small website together, one page at a time. Four weeks, from the kickoff to the closing ceremony. Each week adds one new part of the Git and GitHub workflow.',
       // A relative link, so it works on the custom domain and on the GitHub Pages sub-path.
       link: { href: 'git-github-rules/', label: 'Read the program rules' },
     },
@@ -87,20 +86,20 @@ const nodes: MapNode[] = [
     id: 'wk1',
     k: 'a',
     x: 650,
-    y: 50,
+    y: 110,
     w: 260,
     h: 60,
-    t: 'Week 1 · Kickoff',
-    s: 'Git and GitHub basics',
+    t: 'Week 1 · Kickoff and Home page',
+    s: 'Basics, branches and pull requests',
     d: {
       tag: 'Week 1',
       c: 'a',
-      title: 'Kickoff',
-      sub: 'Git and GitHub basics',
-      text: 'Meet your team and get ready to use Git and GitHub.',
+      title: 'Kickoff and Home page',
+      sub: 'Git and GitHub basics, branches and pull requests',
+      text: 'Meet your team and get ready to use Git and GitHub. Then the team leader starts the codebase, and one member builds the Home page.',
       groups: [
         {
-          h: 'What you learn',
+          h: 'Git and GitHub basics',
           items: [
             'What version control is, and why teams use it',
             'The difference between Git (the tool) and GitHub (the website that hosts the code)',
@@ -109,27 +108,8 @@ const nodes: MapNode[] = [
             'Repositories: create one, and clone it to your computer',
           ],
         },
-      ],
-    },
-  },
-  {
-    id: 'wk2',
-    k: 'a',
-    x: 650,
-    y: 170,
-    w: 260,
-    h: 60,
-    t: 'Week 2 · Home page',
-    s: 'Branches and pull requests',
-    d: {
-      tag: 'Week 2',
-      c: 'a',
-      title: 'Home page',
-      sub: 'Branches and pull requests',
-      text: 'The team leader starts the codebase, and one member builds the Home page.',
-      groups: [
         {
-          h: 'What you learn',
+          h: 'Branches and pull requests',
           items: [
             'Create a branch from main, or from another branch',
             'Commit your changes with a clear message in English',
@@ -141,16 +121,16 @@ const nodes: MapNode[] = [
     },
   },
   {
-    id: 'wk3',
+    id: 'wk2',
     k: 'a',
     x: 650,
-    y: 290,
+    y: 230,
     w: 260,
     h: 60,
-    t: 'Week 3 · About us',
+    t: 'Week 2 · About us',
     s: 'Many branches at once',
     d: {
-      tag: 'Week 3',
+      tag: 'Week 2',
       c: 'a',
       title: 'About us page',
       sub: 'Many branches at the same time',
@@ -169,16 +149,16 @@ const nodes: MapNode[] = [
     },
   },
   {
-    id: 'wk4',
+    id: 'wk3',
     k: 'a',
     x: 650,
-    y: 410,
+    y: 350,
     w: 260,
     h: 60,
-    t: 'Week 4 · Contact',
+    t: 'Week 3 · Contact',
     s: 'Code review and merge',
     d: {
-      tag: 'Week 4',
+      tag: 'Week 3',
       c: 'a',
       title: 'Contact page',
       sub: 'Code review and merge',
@@ -198,16 +178,16 @@ const nodes: MapNode[] = [
     },
   },
   {
-    id: 'wk5',
+    id: 'wk4',
     k: 'a',
     x: 650,
-    y: 530,
+    y: 470,
     w: 260,
     h: 60,
-    t: 'Week 5 · Closing ceremony',
+    t: 'Week 4 · Closing ceremony',
     s: 'Recap and showcase',
     d: {
-      tag: 'Week 5',
+      tag: 'Week 4',
       c: 'a',
       title: 'Closing ceremony',
       sub: 'Recap and showcase',
@@ -301,9 +281,8 @@ const edges: Edge[] = [
   { a: 's-docker', b: 'dk2', c: 'a' },
   { a: 's-time', b: 'wk1', c: 'a' },
   { a: 's-time', b: 'wk2', c: 'a' },
-  { a: 's-time', b: 'wk3', c: 'a', line: true },
+  { a: 's-time', b: 'wk3', c: 'a' },
   { a: 's-time', b: 'wk4', c: 'a' },
-  { a: 's-time', b: 'wk5', c: 'a' },
 ];
 
 export const gitStudyJam: Diagram = {
