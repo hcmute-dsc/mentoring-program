@@ -23,6 +23,8 @@ export type Block =
   | { kind: 'cards'; items: { title: string; text: string }[] };
 
 export interface Sub {
+  /** Used in a link to this rule, such as #no-ai. The same in both languages. */
+  id?: string;
   /** Number shown before the heading, such as "1.1". */
   n: string;
   h: string;
@@ -45,6 +47,8 @@ export interface RulesText {
   title: string;
   lead: string;
   facts: { label: string; value: string }[];
+  /** A key rule, shown in a warning box near the top of the page. `href` links to the full rule. */
+  alert: { title: string; text: string; more: string; href: string };
   contents: string;
   sections: Section[];
   register: string;
@@ -68,6 +72,12 @@ export const rules: Record<Lang, RulesText> = {
       { label: 'Task', value: 'Build a project (website/software) and manage the source code with Git and GitHub' },
       { label: 'Submission', value: 'Through a Google Form provided by the organizers' },
     ],
+    alert: {
+      title: 'No AI for Git and GitHub',
+      text: 'Participants must **not use AI to interact with Git and GitHub**, or to **write commit messages, Pull Requests and review comments**. If a team does, **its submission is not graded**.',
+      more: 'Read rule 1.5',
+      href: '#no-ai',
+    },
     contents: 'On this page',
     register: 'Register',
     newTab: '(opens in a new tab)',
@@ -160,7 +170,36 @@ export const rules: Record<Lang, RulesText> = {
             ],
           },
           {
+            id: 'no-ai',
             n: '1.5',
+            h: 'Using AI with Git and GitHub',
+            blocks: [
+              {
+                kind: 'warn',
+                title: 'No AI for Git and GitHub',
+                blocks: [
+                  {
+                    kind: 'p',
+                    text: 'Participants must **not use AI to interact with Git and GitHub**. Team members must do every Git and GitHub action, and write every commit message, Pull Request and review comment, by themselves. This includes:',
+                  },
+                  {
+                    kind: 'list',
+                    items: [
+                      'Running Git commands.',
+                      'Creating branches and commits.',
+                      'Opening, reviewing and merging Pull Requests.',
+                      'Writing commit messages.',
+                      'Writing the titles and descriptions of Pull Requests.',
+                      'Writing review comments on Pull Requests.',
+                    ],
+                  },
+                  { kind: 'p', text: 'If a team breaks this rule, **its submission is not graded**.' },
+                ],
+              },
+            ],
+          },
+          {
+            n: '1.6',
             h: 'Rewards',
             blocks: [
               {
@@ -184,7 +223,11 @@ export const rules: Record<Lang, RulesText> = {
               {
                 kind: 'list',
                 mark: 'check',
-                items: ['The work is submitted within the given time.', 'The work is not edited after submission.'],
+                items: [
+                  'The work is submitted within the given time.',
+                  'The work is not edited after submission.',
+                  'AI is not used to interact with Git and GitHub, or to write commit messages, Pull Requests and review comments (see rule 1.5).',
+                ],
               },
             ],
           },
@@ -275,6 +318,12 @@ export const rules: Record<Lang, RulesText> = {
       { label: 'Nội dung', value: 'Xây dựng một dự án (website/phần mềm) và quản lý mã nguồn bằng Git – GitHub' },
       { label: 'Nộp bài', value: 'Qua Google Form do ban tổ chức cung cấp' },
     ],
+    alert: {
+      title: 'Không dùng AI để thao tác với Git và GitHub',
+      text: 'Người tham gia **không được sử dụng AI để thao tác với Git và GitHub**, hay để **viết commit message, Pull Request và bình luận review**. Nếu vi phạm, **bài nộp của nhóm sẽ không được chấm điểm**.',
+      more: 'Xem mục 1.5',
+      href: '#no-ai',
+    },
     contents: 'Mục lục',
     register: 'Đăng ký tham gia',
     newTab: '(mở trong thẻ mới)',
@@ -367,7 +416,36 @@ export const rules: Record<Lang, RulesText> = {
             ],
           },
           {
+            id: 'no-ai',
             n: '1.5',
+            h: 'Sử dụng AI với Git và GitHub',
+            blocks: [
+              {
+                kind: 'warn',
+                title: 'Không dùng AI để thao tác với Git và GitHub',
+                blocks: [
+                  {
+                    kind: 'p',
+                    text: 'Người tham gia **không được sử dụng AI để thao tác với Git và GitHub**. Mọi thao tác với Git và GitHub, cùng mọi commit message, Pull Request và bình luận review, phải do các thành viên trong nhóm tự thực hiện, bao gồm:',
+                  },
+                  {
+                    kind: 'list',
+                    items: [
+                      'Chạy các lệnh Git.',
+                      'Tạo branch và commit.',
+                      'Tạo, review và merge Pull Request.',
+                      'Viết commit message.',
+                      'Viết tiêu đề và mô tả của Pull Request.',
+                      'Viết bình luận review trên Pull Request.',
+                    ],
+                  },
+                  { kind: 'p', text: 'Nếu vi phạm, **bài nộp của nhóm sẽ không được chấm điểm**.' },
+                ],
+              },
+            ],
+          },
+          {
+            n: '1.6',
             h: 'Khen thưởng',
             blocks: [
               {
@@ -391,7 +469,11 @@ export const rules: Record<Lang, RulesText> = {
               {
                 kind: 'list',
                 mark: 'check',
-                items: ['Nộp bài đúng thời gian quy định.', 'Không chỉnh sửa bài làm sau khi nộp.'],
+                items: [
+                  'Nộp bài đúng thời gian quy định.',
+                  'Không chỉnh sửa bài làm sau khi nộp.',
+                  'Không sử dụng AI để thao tác với Git và GitHub, hay để viết commit message, Pull Request và bình luận review (xem mục 1.5).',
+                ],
               },
             ],
           },

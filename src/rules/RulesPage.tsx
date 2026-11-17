@@ -164,6 +164,18 @@ export function RulesPage() {
           ))}
         </dl>
 
+        <div className="doc-alert" role="note">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path d="M12 3 2.5 20h19L12 3z" />
+            <path d="M12 10v4.5M12 17.5v.01" />
+          </svg>
+          <div>
+            <p className="doc-alert-h">{t.alert.title}</p>
+            <p>{rich(t.alert.text)}</p>
+            <a href={t.alert.href}>{t.alert.more}</a>
+          </div>
+        </div>
+
         <nav className="doc-toc" aria-label={t.contents}>
           <span>{t.contents}</span>
           <ol>
@@ -185,7 +197,7 @@ export function RulesPage() {
               {s.h}
             </h2>
             {s.subs.map((sub, i) => (
-              <div className="doc-sub" key={i}>
+              <div className="doc-sub" id={sub.id} key={i}>
                 {sub.h && (
                   <h3>
                     <span className="doc-n">{sub.n}</span>

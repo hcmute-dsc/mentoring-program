@@ -378,6 +378,43 @@ html {
   color: var(--warn);
 }
 
+/* The key rule near the top of the page. Stronger than a warning box: a full border and an icon. */
+.doc-alert {
+  display: flex;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--warn-soft);
+  border: 1.5px solid var(--warn);
+  border-radius: 12px;
+}
+.doc-alert svg {
+  flex: none;
+  margin-top: 1px;
+  fill: none;
+  stroke: var(--warn);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.doc-alert > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.doc-alert-h {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--warn);
+}
+.doc-alert a {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--warn);
+}
+
 /* Point cards and prize cards */
 .doc-cards {
   display: grid;
