@@ -19,6 +19,8 @@ export interface Detail {
   pre?: string;
   /** A required action, shown in a highlighted box under the text. */
   note?: string;
+  /** A button at the end of the panel that opens another page, such as the rules of a program. */
+  link?: { href: string; label: string };
 }
 
 /** One block on the map. */

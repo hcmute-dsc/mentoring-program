@@ -47,6 +47,8 @@ const nodes: MapNode[] = [
       tag: 'Track 1',
       title: 'Git & GitHub',
       text: 'Each team builds a small website together, one page at a time. Five weeks, from the kickoff to the closing ceremony. Each week adds one new part of the Git and GitHub workflow.',
+      // A relative link, so it works on the custom domain and on the GitHub Pages sub-path.
+      link: { href: 'git-github-rules/', label: 'Read the program rules' },
     },
   },
   {

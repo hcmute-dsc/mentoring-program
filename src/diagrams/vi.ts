@@ -46,6 +46,7 @@ const translations: Record<string, Translation> = {
           tag: 'Nhánh 1',
           title: 'Git & GitHub',
           text: 'Mỗi nhóm cùng xây một website nhỏ, từng trang một. Năm tuần, từ buổi khởi động đến buổi bế mạc. Mỗi tuần thêm một phần mới của quy trình Git và GitHub.',
+          link: { href: 'git-github-rules/', label: 'Xem thể lệ chương trình' },
         },
       },
       's-docker': {
