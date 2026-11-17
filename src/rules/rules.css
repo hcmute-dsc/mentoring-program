@@ -194,6 +194,10 @@ html {
   padding: 14px 16px;
   background: var(--surface);
 }
+/* With an odd number of facts, the last one fills the whole row, so no empty cell is left. */
+.doc-facts > div:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
 .doc-facts dt,
 .doc-toc > span,
 .doc-rank th,

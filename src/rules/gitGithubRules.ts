@@ -63,6 +63,7 @@ export const rules: Record<Lang, RulesText> = {
     lead: 'Teams build one project and manage its source code with Git and GitHub. Read these rules before you submit your first task.',
     facts: [
       { label: 'Duration', value: 'Nov 22 – Dec 13, 2026 · 3 weeks' },
+      { label: 'Closing ceremony', value: 'Sunday, Dec 20, 2026 (tentative)' },
       { label: 'Format', value: 'Team competition, 3–5 members per team' },
       { label: 'Task', value: 'Build a project (website/software) and manage the source code with Git and GitHub' },
       { label: 'Submission', value: 'Through a Google Form provided by the organizers' },
@@ -86,6 +87,7 @@ export const rules: Record<Lang, RulesText> = {
                 kind: 'list',
                 items: [
                   'The program runs from **November 22, 2026** to **December 13, 2026** (3 weeks in total).',
+                  'The **closing ceremony** is planned for one week later, on **Sunday, December 20, 2026 (tentative)**.',
                   'Students join as teams. Each team has **3 to 5 members**.',
                 ],
               },
@@ -268,6 +270,7 @@ export const rules: Record<Lang, RulesText> = {
     lead: 'Các nhóm xây dựng một dự án và quản lý mã nguồn bằng Git – GitHub. Hãy đọc kỹ thể lệ trước khi nộp nhiệm vụ đầu tiên.',
     facts: [
       { label: 'Thời gian', value: '22/11/2026 – 13/12/2026 · 3 tuần' },
+      { label: 'Lễ bế mạc', value: 'Chủ nhật, 20/12/2026 (dự kiến)' },
       { label: 'Hình thức', value: 'Thi đấu theo nhóm, 3 – 5 thành viên mỗi nhóm' },
       { label: 'Nội dung', value: 'Xây dựng một dự án (website/phần mềm) và quản lý mã nguồn bằng Git – GitHub' },
       { label: 'Nộp bài', value: 'Qua Google Form do ban tổ chức cung cấp' },
@@ -291,6 +294,7 @@ export const rules: Record<Lang, RulesText> = {
                 kind: 'list',
                 items: [
                   'Chương trình diễn ra từ ngày **22/11/2026** đến ngày **13/12/2026** (tổng thời gian: 3 tuần).',
+                  '**Lễ bế mạc** diễn ra sau đó một tuần, vào **Chủ nhật, ngày 20/12/2026 (dự kiến)**.',
                   'Sinh viên tham gia theo nhóm. Mỗi nhóm gồm **từ 3 đến 5 thành viên**.',
                 ],
               },
