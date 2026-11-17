@@ -3,7 +3,7 @@ import { LangToggle } from '../components/LangToggle';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { useLang } from '../useLang';
 import { useTheme } from '../useTheme';
-import { rules, type Block } from './gitGithubRules';
+import { REGISTER_URL, rules, type Block } from './gitGithubRules';
 
 /** Shows **text** in bold. Everything else is plain text, so no HTML from the content reaches the page. */
 function rich(s: string): ReactNode {
@@ -141,9 +141,18 @@ export function RulesPage() {
           <span className="tag a">{t.eyebrow}</span>
           <h1>{t.title}</h1>
           <p className="doc-lead">{t.lead}</p>
-          <button type="button" className="doc-copy" onClick={copyLink} aria-live="polite">
-            {copied ? t.copied : t.copyLink}
-          </button>
+          <div className="doc-actions">
+            <a className="doc-register" href={REGISTER_URL} target="_blank" rel="noopener noreferrer">
+              {t.register}
+              <span className="sr-only"> {t.newTab}</span>
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+                <path d="M6 3.5h6.5V10M12.5 3.5 4 12" />
+              </svg>
+            </a>
+            <button type="button" className="doc-copy" onClick={copyLink} aria-live="polite">
+              {copied ? t.copied : t.copyLink}
+            </button>
+          </div>
         </div>
 
         <dl className="doc-facts">

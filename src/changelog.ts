@@ -19,10 +19,12 @@ export const releases: Release[] = [
     items: [
       'A new page with the rules of the Git & GitHub Study Jam: how to take part, how points are counted, and the prizes.',
       'Open it from the "Read the program rules" button in the Git & GitHub block, or share its link.',
+      'Register for the Study Jam with the "Register" button at the top of the rules page.',
     ],
     vi: [
       'Một trang mới với thể lệ Git & GitHub Study Jam: hình thức tham gia, cách tính điểm và giải thưởng.',
       'Mở trang bằng nút "Xem thể lệ chương trình" trong khối Git & GitHub, hoặc chia sẻ liên kết của trang.',
+      'Đăng ký Study Jam bằng nút "Đăng ký tham gia" ở đầu trang thể lệ.',
     ],
   },
   {

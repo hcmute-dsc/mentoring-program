@@ -6,6 +6,10 @@ import type { Lang } from '../i18n';
  * In any text, **like this** is shown in bold.
  */
 
+/** The Google Form where teams register for the Study Jam. */
+export const REGISTER_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSctnyVy4a5bC0T536v4GISt37yxGLzotvB0ic6Y8ZP2UP-avw/viewform?usp=dialog';
+
 export type Block =
   | { kind: 'p'; text: string }
   /** 'check' = a condition to meet, 'cross' = something not allowed. */
@@ -43,6 +47,9 @@ export interface RulesText {
   facts: { label: string; value: string }[];
   contents: string;
   sections: Section[];
+  register: string;
+  /** Read by screen readers after the register button. */
+  newTab: string;
   copyLink: string;
   copied: string;
 }
@@ -61,6 +68,8 @@ export const rules: Record<Lang, RulesText> = {
       { label: 'Submission', value: 'Through a Google Form provided by the organizers' },
     ],
     contents: 'On this page',
+    register: 'Register',
+    newTab: '(opens in a new tab)',
     copyLink: 'Copy link',
     copied: 'Link copied',
     sections: [
@@ -264,6 +273,8 @@ export const rules: Record<Lang, RulesText> = {
       { label: 'Nộp bài', value: 'Qua Google Form do ban tổ chức cung cấp' },
     ],
     contents: 'Mục lục',
+    register: 'Đăng ký tham gia',
+    newTab: '(mở trong thẻ mới)',
     copyLink: 'Sao chép liên kết',
     copied: 'Đã sao chép',
     sections: [
